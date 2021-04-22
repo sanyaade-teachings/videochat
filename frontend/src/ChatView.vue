@@ -1,5 +1,5 @@
 <template>
-    <v-container class="ma-0 pa-0" id="chatViewContainer" fluid>
+    <v-container :class="`ma-0 pa-0 calcHeigh()`" id="chatViewContainer" fluid>
         <splitpanes ref="spl" class="default-theme" horizontal style="height: 100%"
                     @pane-add="onPanelAdd(isScrolledToBottom())" @pane-remove="onPanelRemove()" @resize="onPanelResized">
             <pane v-if="isAllowedVideo()" id="videoBlock" min-size="20" v-bind:size="videoSize">
@@ -403,7 +403,7 @@
     }
 
     #chatViewContainer {
-        height: calc(100vh - 68px)
+        height: calc(100vh - 68px)  // TODO завязаться на высоту screen window.scrollX
         position: relative
         //height: calc(100% - 80px)
         //width: calc(100% - 80px)
