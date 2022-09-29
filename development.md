@@ -486,9 +486,42 @@ go install github.com/99designs/gqlgen@v0.17.20
 gqlgen generate
 ```
 
-# Subscribing
+# Querying
 ```
+# Chat http://localhost:1235/playground
+{
+  links {
+    id
+    title
+    address
+    user {
+      id
+      name
+    }
+  }
+}
+
 subscription {
   subscribe(subscriber:"dodo")
+}
+
+# Video http://localhost:1237/playground
+mutation {
+  createLinkVideo(input: {
+    title:"aaa",
+    address:"ss"
+  }){
+    id
+    title
+    address
+  }
+}
+
+{
+  linksVideo{
+    id
+    title
+    address
+  }
 }
 ```

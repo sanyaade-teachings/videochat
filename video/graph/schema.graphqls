@@ -1,0 +1,23 @@
+type LinkVideo {
+    id: ID!
+    title: String!
+    address: String!
+}
+
+
+type Query {
+    linksVideo: [LinkVideo!]!
+}
+
+input NewLinkVideo {
+    title: String!
+    address: String!
+}
+
+type Mutation {
+    createLinkVideo(input: NewLinkVideo!): LinkVideo!
+}
+
+type Subscription {
+    subscribeVideo(subscriber: String!): String!
+}

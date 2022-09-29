@@ -4,6 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
@@ -19,16 +24,21 @@ import (
 	"net/http"
 	"nkonev.name/video/client"
 	"nkonev.name/video/config"
+	"nkonev.name/video/graph"
+	"nkonev.name/video/graph/generated"
 	"nkonev.name/video/handlers"
 	. "nkonev.name/video/logger"
 	"nkonev.name/video/producer"
 	"nkonev.name/video/rabbitmq"
 	"nkonev.name/video/redis"
 	"nkonev.name/video/services"
+	"time"
 )
 
 const EXTERNAL_TRACE_ID_HEADER = "trace-id"
 const TRACE_RESOURCE = "video"
+const GRAPHQL_PATH = "/query"
+const GRAPHQL_PLAYGROUND = "/playground"
 
 func main() {
 	config.InitViper()
@@ -38,6 +48,8 @@ func main() {
 		fx.Provide(
 			createTypedConfig,
 			configureTracer,
+			configureGraphQlServer,
+			configureGraphQlPlayground,
 			configureEcho,
 			client.NewRestClient,
 			client.NewLivekitClient,
@@ -116,6 +128,8 @@ func configureEcho(
 	lhf *handlers.LivekitWebhookHandler,
 	ih *handlers.InviteHandler,
 	tp *sdktrace.TracerProvider,
+	graphQlServer *handler.Server,
+	graphQlPlayground *GraphQlPlayground,
 ) *echo.Echo {
 
 	bodyLimit := cfg.HttpServerConfig.BodyLimit
@@ -150,6 +164,9 @@ func configureEcho(
 	e.PUT("/video/:id/dial/cancel", ih.ProcessCancelInvitation)
 	e.PUT("/video/:id/dial/stop", ih.ProcessAsOwnerLeave)
 
+	e.Any(GRAPHQL_PATH, handlers.Convert(graphQlServer))
+	e.GET(GRAPHQL_PLAYGROUND, handlers.Convert(graphQlPlayground))
+
 	lc.Append(fx.Hook{
 		OnStop: func(ctx context.Context) error {
 			// do some work on application stop (like closing connections and files)
@@ -159,6 +176,49 @@ func configureEcho(
 	})
 
 	return e
+}
+
+func configureGraphQlServer() *handler.Server {
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	srv.AddTransport(transport.POST{})
+	srv.AddTransport(transport.Websocket{
+		KeepAlivePingInterval: 10 * time.Second,
+		Upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		},
+		InitFunc: func(ctx context.Context, initPayload transport.InitPayload) (context.Context, error) {
+			return webSocketInit2(ctx, initPayload)
+		},
+	})
+	srv.Use(extension.Introspection{})
+	return srv
+}
+
+func webSocketInit2(ctx context.Context, initPayload transport.InitPayload) (context.Context, error) {
+	// Get the token from payload
+	//any := initPayload["authToken"]
+	//token, ok := any.(string)
+	//if !ok || token == "" {
+	//	return nil, errors.New("authToken not found in transport payload")
+	//}
+
+	// Perform token verification and authentication...
+	userId := "john.doe" // e.g. userId, err := GetUserFromAuthentication(token)
+
+	// put it in context
+	ctxNew := context.WithValue(ctx, "username", userId)
+
+	return ctxNew, nil
+}
+
+type GraphQlPlayground struct {
+	http.HandlerFunc
+}
+
+func configureGraphQlPlayground() *GraphQlPlayground {
+	return &GraphQlPlayground{playground.Handler("GraphQL playground", GRAPHQL_PATH)}
 }
 
 func configureTracer(lc fx.Lifecycle, cfg *config.ExtendedConfig) (*sdktrace.TracerProvider, error) {
