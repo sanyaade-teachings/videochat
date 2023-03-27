@@ -142,3 +142,6 @@ custom.ldap.auth:
   enabled: true
   filter: "uid={0}"
   uid-name: uid
+  enabled-attribute: ""
+  user-update-batch-size: 20
+  user-update-cron: "*/20 * * * * *"
