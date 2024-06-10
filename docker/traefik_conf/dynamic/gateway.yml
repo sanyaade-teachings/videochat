@@ -57,6 +57,11 @@ http:
       service: seo-service
       middlewares:
         - "retry-middleware"
+    seo-router-chat-ssr:
+      rule: "PathPrefix(`/chat/public`) && HeadersRegexp(`User-Agent`, `(?i)(Go-|bot|yandex|google)`)"
+      service: seo-service
+      middlewares:
+        - "retry-middleware"
 
     seo-router-robots:
       rule: "Path(`/robots.txt`)"

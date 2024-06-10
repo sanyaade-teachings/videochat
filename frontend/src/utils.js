@@ -64,7 +64,7 @@ export const getBlogLink = (chatId) => {
 
 export const getPublicMessageLink = (chatId, messageId) => {
     // see also public_message in routes.js
-    return getUrlPrefix() + chat + '/' + chatId + '/public/' + messageId;
+    return getUrlPrefix() + chat + '/public/' + chatId + '/message/' + messageId;
 }
 
 export const getHumanReadableDate = (timestamp) => {

@@ -30,7 +30,7 @@ export const password_restore_enter_new = `${prefix}/password-restore/enter-new`
 export const registration_resend_email = `${prefix}/registration/resend-email`;
 
 // see also getPublicMessageLink in utils.js
-export const public_message = `${prefix}/chat/:id/public/:messageId`;
+export const public_message = `${prefix}/chat/public/:id/message/:messageId`;
 
 
 export const root_name = 'root';
