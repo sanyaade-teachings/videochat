@@ -554,7 +554,7 @@
                         bus.emit(PLAYER_MODAL, {canShowAsImage: true, url: found.src})
                         break;
                     }
-                    case "div": {
+                    case "div": { // contains video
                         const video = Array.from(found?.children).find(ch => ch?.tagName?.toLowerCase() == "video");
                         bus.emit(PLAYER_MODAL, {canPlayAsVideo: true, url: video.src, previewUrl: video.poster})
                         break;
