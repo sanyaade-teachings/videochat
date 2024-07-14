@@ -542,13 +542,17 @@
         },
         onClickTrap(e) {
             const foundElements = [
-                checkUpByTreeObj(e?.target, 1, (el) => el?.tagName?.toLowerCase() == "img"),
+                checkUpByTreeObj(e?.target, 1, (el) => el?.tagName?.toLowerCase() == "img" || el?.tagName?.toLowerCase() == "video"),
             ].filter(r => r.found);
             if (foundElements.length) {
                 const found = foundElements[foundElements.length - 1].el;
                 switch (found?.tagName?.toLowerCase()) {
                     case "img": {
                         bus.emit(PLAYER_MODAL, {canShowAsImage: true, url: found.src})
+                        break;
+                    }
+                    case "video": {
+                        bus.emit(PLAYER_MODAL, {canPlayAsVideo: true, url: found.getAttribute('data-src')})
                         break;
                     }
                 }

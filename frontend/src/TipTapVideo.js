@@ -24,10 +24,13 @@ const Video = Node.create({
             "poster": {
                 default: null
             },
+            "data-src": {
+                default: null
+            },
         }
     },
     renderHTML({ HTMLAttributes }) {
-        return ['video', mergeAttributes({"class": "video-custom-class", "controls": true}, HTMLAttributes)];
+        return ['video', mergeAttributes({"class": "video-custom-class", "controls": false}, HTMLAttributes)];
     },
     addCommands() {
         return {

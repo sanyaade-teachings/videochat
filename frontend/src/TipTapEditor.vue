@@ -136,7 +136,7 @@ export default {
         this.fileInput.click();
     },
     setVideo(src, previewUrl) {
-        this.editor.chain().focus().setVideo({ src: src, poster: previewUrl }).run();
+        this.editor.chain().focus().setVideo({ 'data-src': src, poster: previewUrl }).run();
     },
     setAudio(src) {
         this.editor.chain().focus().setAudio({ src: src }).run();
