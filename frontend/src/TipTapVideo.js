@@ -12,7 +12,17 @@ const Video = Node.create({
     parseHTML() {
         return [
             {
-                tag: 'video',
+                tag: 'div',
+                getAttrs: element => {
+                    element.classList.contains('my-custom-div')
+
+                    const video = element.children.length ? element.children[0] : null
+                    console.warn('returning', element, video)
+                    return {
+                        src: video?.src,
+                        poster: video?.poster
+                    }
+                },
             },
         ]
     },
@@ -27,7 +37,7 @@ const Video = Node.create({
         }
     },
     renderHTML({ HTMLAttributes }) {
-        return ['video', mergeAttributes({"class": "video-custom-class", "controls": true}, HTMLAttributes)];
+        return ['div', {"class": "my-custom-div"}, ['video', mergeAttributes({"class": "video-custom-class", "controls": true}, HTMLAttributes)]];
     },
     addCommands() {
         return {
