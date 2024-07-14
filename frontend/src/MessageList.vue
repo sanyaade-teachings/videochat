@@ -544,7 +544,7 @@
             const foundElements = [
                 checkUpByTreeObj(e?.target, 1, (el) => {
                     return el?.tagName?.toLowerCase() == "img" ||
-                        el?.classList.contains("video-in-message-button")
+                        Array.from(el?.children).find(ch => ch?.classList?.contains("video-in-message-button"))
                 })
             ].filter(r => r.found);
             if (foundElements.length) {
@@ -555,12 +555,8 @@
                         break;
                     }
                     case "div": {
-                        for (const child of found.parentElement.children) {
-                            if (child.tagName?.toLowerCase() == "video") {
-                                bus.emit(PLAYER_MODAL, {canPlayAsVideo: true, url: child.src, previewUrl: child.poster})
-                                break;
-                            }
-                        }
+                        const video = Array.from(found?.children).find(ch => ch?.tagName?.toLowerCase() == "video");
+                        bus.emit(PLAYER_MODAL, {canPlayAsVideo: true, url: video.src, previewUrl: video.poster})
                         break;
                     }
                 }
