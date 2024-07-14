@@ -39,6 +39,20 @@ const Video = Node.create({
             },
         }
     },
+
+    // https://www.codemzy.com/blog/tiptap-video-embed-extension
+    addNodeView() {
+        return ({ editor, node }) => {
+            const div = document.createElement('div');
+            div.classList.add("my-class");
+            const video = document.createElement('video');
+            video.src = node.attrs.src;
+            div.append(video);
+            return {
+                dom: div,
+            }
+        }
+    },
 });
 
 export default Video;
