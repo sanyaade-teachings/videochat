@@ -30,7 +30,7 @@ const Video = Node.create({
         return [
             'div', {"class": "video-in-message-wrapper"},
             ['video', mergeAttributes({"class": "video-custom-class", "controls": true}, HTMLAttributes)],
-            ['div', {"class": "video-in-message-button"}]
+            ['span', {"class": "video-in-message-button mdi mdi-play-box-outline"}]
         ];
     },
     addCommands() {
