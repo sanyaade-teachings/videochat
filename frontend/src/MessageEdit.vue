@@ -746,14 +746,16 @@
     height 100%
 }
 
-.theEditor {
-    margin-left 6px
-    margin-right 6px
-}
+@media screen and (min-width: $mobileWidth) {
+    .theEditor {
+        margin-left 6px
+        margin-right 6px
+    }
 
-.allButtons {
-    margin-left 6px
-    margin-right 6px
+    .allButtons {
+        margin-left 6px
+        margin-right 6px
+    }
 }
 
 .custom-toolbar-send {
