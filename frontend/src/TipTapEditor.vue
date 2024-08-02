@@ -365,10 +365,8 @@ export default {
   flex-direction: column;
   color: #0d0d0d;
   background-color: #fff;
-  border: 1px dashed #0D0D0D;
   height: 100%;
   overflow-y: auto;
-  border-color: $borderColor;
   line-height: $lineHeight;
 }
 

@@ -746,10 +746,16 @@
     height 100%
 }
 
+.theEditor {
+    border-bottom: 1px dashed $borderColor
+}
+
 @media screen and (min-width: $mobileWidth) {
     .theEditor {
         margin-left 6px
         margin-right 6px
+
+        border: 1px dashed $borderColor
     }
 
     .allButtons {
