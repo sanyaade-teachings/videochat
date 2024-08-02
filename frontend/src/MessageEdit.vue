@@ -5,6 +5,7 @@
             <div class="answer-text"><v-icon @click="resetAnswer()" :title="$vuetify.locale.t('$vuetify.remove_answer')">mdi-close</v-icon>{{answerOnPreview}}</div>
         </div>
         <tiptap
+            class="theEditor"
             ref="tipTapRef"
             @myinput="onInput"
             @keydown.ctrl.enter.native="sendMessageToChat"
@@ -743,6 +744,11 @@
     background white
     min-height 25%
     height 100%
+}
+
+.theEditor {
+    margin-left 6px
+    margin-right 6px
 }
 
 .custom-toolbar-send {
