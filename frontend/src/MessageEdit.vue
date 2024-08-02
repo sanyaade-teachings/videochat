@@ -13,7 +13,7 @@
             @sendMessage="sendMessageToChat"
         />
 
-        <div class="d-flex flex-wrap flex-row align-center" v-if="chatStore.shouldShowSendMessageButtons">
+        <div class="d-flex flex-wrap flex-row align-center allButtons" v-if="chatStore.shouldShowSendMessageButtons">
           <v-slide-group
               multiple
               show-arrows
@@ -747,6 +747,11 @@
 }
 
 .theEditor {
+    margin-left 6px
+    margin-right 6px
+}
+
+.allButtons {
     margin-left 6px
     margin-right 6px
 }
