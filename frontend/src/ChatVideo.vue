@@ -1,6 +1,9 @@
 <template>
-  <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTopProperty ? 'video-container-position-top' : 'video-container-position-side'">
-  </v-col>
+    <div class="d-flex flex-row">
+      <div>With presenter</div>
+      <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTopProperty ? 'video-container-position-top' : 'video-container-position-side'">
+      </v-col>
+    </div>
 </template>
 
 <script>
