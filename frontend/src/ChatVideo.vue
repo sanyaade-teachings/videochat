@@ -1,6 +1,19 @@
 <template>
-  <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTopProperty ? 'video-container-position-top' : 'video-container-position-side'">
-  </v-col>
+    <template v-if="presenter">
+        <splitpanes :dbl-click-splitter="false">
+            <pane size="80">
+                <div class="video-presenter-container-element">
+                    <video id="presenter" class="video-presenter-element" ref="presenterRef"/>
+                </div>
+            </pane>
+            <pane>
+                <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTopProperty ? 'video-container-position-top' : 'video-container-position-side'"></v-col>
+            </pane>
+        </splitpanes>
+    </template>
+    <template v-else>
+        <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTopProperty ? 'video-container-position-top' : 'video-container-position-side'"></v-col>
+    </template>
 </template>
 
 <script>
@@ -43,6 +56,7 @@ import {mapStores} from "pinia";
 import {goToPreservingQuery} from "@/mixins/searchString";
 import pinia from "@/store/index";
 import videoPositionMixin from "@/mixins/videoPositionMixin";
+import { Splitpanes, Pane } from 'splitpanes';
 
 const first = 'first';
 const second = 'second';
@@ -54,14 +68,14 @@ export default {
     refreshLocalMutedInAppBarMixin(),
     videoPositionMixin(),
   ],
-  props: ['videoIsOnTopProperty'],
+  props: ['videoIsOnTopProperty', 'presenter', 'chatId'],
   data() {
     return {
       room: null,
       videoContainerDiv: null,
       userVideoComponents: new Map(),
       inRestarting: false,
-      chatId: null,
+      presenterVideoPublication: null,
     }
   },
   methods: {
@@ -146,6 +160,9 @@ export default {
             candidateToAppendVideo.setUserName(md.login);
             candidateToAppendVideo.setAvatar(md.avatar);
             candidateToAppendVideo.setUserId(md.userId);
+
+            this.updatePresenterIfNeed(track);
+
             return
           } else if (track.kind == 'audio') {
             console.debug("Processing audio track", track);
@@ -177,6 +194,22 @@ export default {
           this.chatStore.initializingVideoCall = false;
         }
       }
+    },
+
+    // TODO видео обрезается снизу
+    // TODO сохранять позиции SplitPane
+    // TODO убрать кнопки на сообщениях при уменьшении размера
+    // TODO add a presenter mode property and create html elements (old-fashioned all equal videos or the new with presenter) in accordance with
+    // TODO also in presenter mode apply the decreased resolution for side the video elements
+    // TODO think how to reuse the presenter mode with egress
+    updatePresenterIfNeed(cameraPub) {
+        if (this.presenter) {
+            if (this.presenterVideoPublication) {
+                this.presenterVideoPublication.videoTrack?.detach(this.$refs.presenterRef);
+            }
+            cameraPub?.videoTrack?.attach(this.$refs.presenterRef);
+            this.presenterVideoPublication = cameraPub;
+        }
     },
 
     handleTrackUnsubscribed(
@@ -232,6 +265,9 @@ export default {
           console.debug("Track sids", tracksSids, " component audio stream id", audioStreamId);
           if (tracksSids.includes(component.getAudioStreamId())) {
             component.setSpeakingWithTimeout(1000);
+
+            const videoStream = component.getVideoStream();
+            this.updatePresenterIfNeed(videoStream);
           }
         }
       }
@@ -530,12 +566,14 @@ export default {
   computed: {
     ...mapStores(useChatStore),
   },
+  components: {
+      Splitpanes,
+      Pane,
+  },
   async mounted() {
     this.chatStore.setCallStateInCall();
 
     this.chatStore.initializingVideoCall = true;
-
-    this.chatId = this.chatStore.chatDto.id;
 
     if (!this.isMobile() && this.videoIsAtSide()) {
       this.chatStore.showDrawerPrevious = this.chatStore.showDrawer;
@@ -627,6 +665,33 @@ export default {
   scrollbar-width: auto;
   background black
   flex-direction: column;
+}
+
+
+.video-presenter-container-element {
+    position relative
+    display flex
+    flex-direction column
+    align-items: center;
+    //width: fit-content
+    //block-size: fit-content
+    //box-sizing: content-box
+
+    width 100%
+    height 100%
+    margin-top auto
+    margin-bottom auto
+}
+
+
+.video-presenter-element {
+    // object-fit: contain;
+    //box-sizing: border-box;
+    width: 100% !important
+    height: 100% !important
+    min-width: 100% !important
+    object-fit: cover;
+    z-index 2
 }
 
 
