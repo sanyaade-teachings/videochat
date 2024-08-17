@@ -72,6 +72,8 @@ import {path_prefix, blog_post, blogIdPrefix, profile, blog} from "#root/common/
 import {usePageContext} from "#root/renderer/usePageContext.js";
 import debounce from "lodash/debounce.js";
 import bus, {SEARCH_STRING_CHANGED} from "#root/common/bus.js";
+import axios from "axios";
+import { navigate } from 'vike/client/router';
 
 export default {
   setup() {
@@ -112,15 +114,42 @@ export default {
 
       window.location.href = url.toString();
     },
-    onSearchStringChanged(v) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete(PAGE_PARAM);
-      if (v) {
-          url.searchParams.set(SEARCH_MODE_POSTS, v);
-      } else {
-          url.searchParams.delete(SEARCH_MODE_POSTS);
-      }
-      window.location.href = url.toString();
+    onSearchStringChanged(searchString) {
+        const url = new URL(window.location.href);
+
+        url.searchParams.delete(PAGE_PARAM);
+        if (searchString) {
+            url.searchParams.set(SEARCH_MODE_POSTS, searchString);
+        } else {
+            url.searchParams.delete(SEARCH_MODE_POSTS);
+        }
+
+
+        let page = url.searchParams.get(PAGE_PARAM);
+        let actualPage = undefined;
+        if (page) {
+            page = parseInt(page);
+            actualPage = page - 1;
+        }
+        axios.get('/api/blog', {
+            params: {
+                page: actualPage,
+                size: PAGE_SIZE,
+                reverse: false,
+                searchString: searchString,
+            },
+        }).then((response) => {
+            // partial copy-paste from +data.js
+            this.searchStringFacade = searchString;
+            this.items = response.data.items;
+            this.pagesCount = response.data.pagesCount;
+            this.count = response.data.count;
+
+            this.performMarking();
+
+            // TODO https://vike.dev/navigate
+            navigate(url.pathname + "?" + url.search);
+        })
     },
 
     shouldShowPagination() {
