@@ -1,14 +1,14 @@
 <template>
   <v-container class="ma-0 pa-0 my-list-container" fluid>
-    <template v-if="loading">
+    <template v-if="theData.loading">
         <h1>Loading</h1>
     </template>
     <template v-else>
-        <template v-if="items.length">
+        <template v-if="theData.items.length">
             <div class="my-blog-scroller" id="blog-post-list">
 
                 <v-card
-                    v-for="(item, index) in items"
+                    v-for="(item, index) in theData.items"
                     :key="item.id"
                     :id="getItemId(item.id)"
                     class="mb-2 mr-2 blog-item-root"
@@ -59,7 +59,7 @@
                 </v-card>
 
                 <v-divider/>
-                <v-pagination v-model="page" @update:modelValue="onClickPage" :length="pagesCount" v-if="shouldShowPagination()" :total-visible="pagesCount < 10 && !isMobile() ? 10 : undefined"/>
+                <v-pagination v-model="theData.page" @update:modelValue="onClickPage" :length="theData.pagesCount" v-if="shouldShowPagination()" :total-visible="theData.pagesCount < 10 && !isMobile() ? 10 : undefined"/>
             </div>
         </template>
         <div v-else>
@@ -76,7 +76,6 @@ import {path_prefix, blog_post, blogIdPrefix, profile, blog} from "#root/common/
 import {usePageContext} from "#root/renderer/usePageContext.js";
 import debounce from "lodash/debounce.js";
 import bus, {SEARCH_STRING_CHANGED} from "#root/common/bus.js";
-import axios from "axios";
 import { navigate } from 'vike/client/router';
 
 export default {
@@ -89,7 +88,10 @@ export default {
     }
   },
   data() {
-      return this.pageContext.data;
+      //return this.pageContext.data;
+      return {
+          // ...this.theData
+      }
   },
   methods: {
     getLoginColoredStyle,
@@ -120,6 +122,7 @@ export default {
     },
     onSearchStringChanged(searchString) {
         this.loading = true;
+
         const url = new URL(window.location.href);
 
         url.searchParams.delete(PAGE_PARAM);
@@ -129,29 +132,10 @@ export default {
             url.searchParams.delete(SEARCH_MODE_POSTS);
         }
 
-
-        let page = url.searchParams.get(PAGE_PARAM);
-        let actualPage = undefined;
-        if (page) {
-            page = parseInt(page);
-            actualPage = page - 1;
-        }
-        axios.get('/api/blog', {
-            params: {
-                page: actualPage,
-                size: PAGE_SIZE,
-                reverse: false,
-                searchString: searchString,
-            },
-        }).then((response) => {
-            // partial copy-paste from +data.js
-            this.searchStringFacade = searchString;
-            this.items = response.data.items;
-            this.pagesCount = response.data.pagesCount;
-            this.count = response.data.count;
-            this.loading = false;
-
+        this.$nextTick(()=>{
             navigate(url.pathname + url.search);
+
+            this.$forceUpdate();
             this.performMarking();
         })
     },
@@ -169,6 +153,9 @@ export default {
     },
   },
   computed: {
+      theData() {
+          return this.pageContext.data;
+      },
   },
   created() {
       this.onSearchStringChanged = debounce(this.onSearchStringChanged, 700, {leading:false, trailing:true})

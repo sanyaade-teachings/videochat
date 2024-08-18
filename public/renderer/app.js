@@ -47,6 +47,7 @@ function createApp(pageContext) {
   // We use `app.changePage()` to do Client Routing, see `+onRenderClient.ts`
   Object.assign(app, {
     changePage: (pageContext) => {
+        console.warn(">>>>>>> cnah p c", pageContext)
       Object.assign(pageContextReactive, pageContext)
       rootComponent.Page = markRaw(pageContext.Page)
     }
