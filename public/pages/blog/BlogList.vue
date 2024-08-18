@@ -1,67 +1,71 @@
 <template>
   <v-container class="ma-0 pa-0 my-list-container" fluid>
-    <template v-if="items.length">
-        <div class="my-blog-scroller" id="blog-post-list">
+    <template v-if="loading">
+        <h1>Loading</h1>
+    </template>
+    <template v-else>
+        <template v-if="items.length">
+            <div class="my-blog-scroller" id="blog-post-list">
 
-          <v-card
-            v-for="(item, index) in items"
-            :key="item.id"
-            :id="getItemId(item.id)"
-            class="mb-2 mr-2 blog-item-root"
-            :min-width="isMobile() ? 200 : 400"
-            max-width="600"
-          >
-            <v-card-text class="pb-0">
-              <v-card>
-                <v-img
-                  class="text-white align-end"
-                  gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                  cover
-                  :height="isMobile() ? 200 : 300"
-                  :src="item.imageUrl"
+                <v-card
+                    v-for="(item, index) in items"
+                    :key="item.id"
+                    :id="getItemId(item.id)"
+                    class="mb-2 mr-2 blog-item-root"
+                    :min-width="isMobile() ? 200 : 400"
+                    max-width="600"
                 >
-                  <v-container class="post-title ma-0 pa-0">
-                    <v-card-title>
-                      <a class="post-title-text" v-html="item.title" :href="getLink(item)"></a>
-                    </v-card-title>
-                  </v-container>
-                </v-img>
-              </v-card>
-            </v-card-text>
+                    <v-card-text class="pb-0">
+                        <v-card>
+                            <v-img
+                                class="text-white align-end"
+                                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                cover
+                                :height="isMobile() ? 200 : 300"
+                                :src="item.imageUrl"
+                            >
+                                <v-container class="post-title ma-0 pa-0">
+                                    <v-card-title>
+                                        <a class="post-title-text" v-html="item.title" :href="getLink(item)"></a>
+                                    </v-card-title>
+                                </v-container>
+                            </v-img>
+                        </v-card>
+                    </v-card-text>
 
-            <v-card-text class="post-text pb-0" v-html="item.preview">
-            </v-card-text>
+                    <v-card-text class="post-text pb-0" v-html="item.preview">
+                    </v-card-text>
 
-            <v-card-actions v-if="item?.owner != null">
-              <v-list-item class="px-0 ml-2">
-                  <template v-slot:prepend v-if="hasLength(item?.owner?.avatar)">
-                      <div class="item-avatar mr-3">
-                          <a :href="getProfileLink(item.owner)" class="user-link">
-                              <img :src="item?.owner?.avatar">
-                          </a>
-                      </div>
-                  </template>
+                    <v-card-actions v-if="item?.owner != null">
+                        <v-list-item class="px-0 ml-2">
+                            <template v-slot:prepend v-if="hasLength(item?.owner?.avatar)">
+                                <div class="item-avatar mr-3">
+                                    <a :href="getProfileLink(item.owner)" class="user-link">
+                                        <img :src="item?.owner?.avatar">
+                                    </a>
+                                </div>
+                            </template>
 
-                  <template v-slot:default>
-                      <v-list-item-title><a :href="getProfileLink(item.owner)" class="nodecorated-link" :style="getLoginColoredStyle(item.owner, true)">{{ item?.owner?.login }}</a></v-list-item-title>
-                      <v-list-item-subtitle>
-                          {{ getDate(item) }}
-                      </v-list-item-subtitle>
+                            <template v-slot:default>
+                                <v-list-item-title><a :href="getProfileLink(item.owner)" class="nodecorated-link" :style="getLoginColoredStyle(item.owner, true)">{{ item?.owner?.login }}</a></v-list-item-title>
+                                <v-list-item-subtitle>
+                                    {{ getDate(item) }}
+                                </v-list-item-subtitle>
 
-                  </template>
+                            </template>
 
-              </v-list-item>
-            </v-card-actions>
-          </v-card>
+                        </v-list-item>
+                    </v-card-actions>
+                </v-card>
 
-          <v-divider/>
-          <v-pagination v-model="page" @update:modelValue="onClickPage" :length="pagesCount" v-if="shouldShowPagination()" :total-visible="pagesCount < 10 && !isMobile() ? 10 : undefined"/>
+                <v-divider/>
+                <v-pagination v-model="page" @update:modelValue="onClickPage" :length="pagesCount" v-if="shouldShowPagination()" :total-visible="pagesCount < 10 && !isMobile() ? 10 : undefined"/>
+            </div>
+        </template>
+        <div v-else>
+            <h1>Posts not found</h1>
         </div>
     </template>
-    <div v-else>
-      <h1>Posts not found</h1>
-    </div>
-
   </v-container>
 </template>
 
@@ -115,6 +119,7 @@ export default {
       window.location.href = url.toString();
     },
     onSearchStringChanged(searchString) {
+        this.loading = true;
         const url = new URL(window.location.href);
 
         url.searchParams.delete(PAGE_PARAM);
@@ -144,11 +149,10 @@ export default {
             this.items = response.data.items;
             this.pagesCount = response.data.pagesCount;
             this.count = response.data.count;
+            this.loading = false;
 
+            navigate(url.pathname + url.search);
             this.performMarking();
-
-            // TODO https://vike.dev/navigate
-            navigate(url.pathname + "?" + url.search);
         })
     },
 
@@ -157,8 +161,8 @@ export default {
     },
     performMarking() {
       this.$nextTick(() => {
+          this.markInstance.unmark();
           if (hasLength(this.searchStringFacade)) {
-              this.markInstance.unmark();
               this.markInstance.mark(this.searchStringFacade);
           }
       })
