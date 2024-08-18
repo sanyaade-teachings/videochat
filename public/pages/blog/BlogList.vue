@@ -1,6 +1,6 @@
 <template>
   <v-container class="ma-0 pa-0 my-list-container" fluid>
-    <template v-if="pageContext.data.loading">
+    <template v-if="loading">
         <h1>Loading</h1>
     </template>
     <template v-else>
@@ -87,6 +87,11 @@ export default {
         pageContext
     }
   },
+  data() {
+      return {
+          markInstance: null,
+      }
+  },
   methods: {
     getLoginColoredStyle,
     hasLength,
@@ -115,7 +120,8 @@ export default {
       window.location.href = url.toString();
     },
     onSearchStringChanged(searchString) {
-        this.loading = true;
+        this.markInstance.unmark();
+        this.loading = true; // false will be set with the new data from server
 
         const url = new URL(window.location.href);
 
@@ -128,8 +134,6 @@ export default {
 
         this.$nextTick(()=>{
             navigate(url.pathname + url.search);
-
-            this.$forceUpdate();
             this.performMarking();
         })
     },
@@ -140,10 +144,25 @@ export default {
     performMarking() {
       this.$nextTick(() => {
           this.markInstance.unmark();
-          if (hasLength(this.searchStringFacade)) {
-              this.markInstance.mark(this.searchStringFacade);
+          if (hasLength(this.pageContext.data.searchStringFacade)) {
+              this.markInstance.mark(this.pageContext.data.searchStringFacade);
           }
       })
+    },
+  },
+  computed: {
+      loading: {
+          get() {
+              return this.pageContext.data.loading
+          },
+          set(v) {
+              this.pageContext.data.loading = v;
+          }
+      }
+  },
+  watch: {
+    'pageContext.data.items': function(newUserValue, oldUserValue) {
+        this.performMarking();
     },
   },
   created() {
@@ -152,7 +171,7 @@ export default {
   mounted() {
       this.markInstance = new Mark("div#blog-post-list");
       bus.on(SEARCH_STRING_CHANGED, this.onSearchStringChanged);
-      this.performMarking();
+      this.performMarking(); // for initial
   },
   beforeUnmount() {
       this.markInstance.unmark();
