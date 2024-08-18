@@ -1,7 +1,11 @@
 <template>
   <v-container class="ma-0 pa-0 my-list-container" fluid>
     <template v-if="loading">
-        <h1>Loading</h1>
+        <v-progress-circular
+            class="ma-4"
+            color="primary"
+            indeterminate
+        ></v-progress-circular>
     </template>
     <template v-else>
         <template v-if="pageContext.data.items.length">
@@ -59,7 +63,9 @@
                 </v-card>
 
                 <v-divider/>
-                <v-pagination v-model="pageContext.data.page" @update:modelValue="onClickPage" :length="pageContext.data.pagesCount" v-if="shouldShowPagination()" :total-visible="pageContext.data.pagesCount < 10 && !isMobile() ? 10 : undefined"/>
+                <v-container class="ma-0 pa-0" fluid>
+                    <v-pagination v-model="pageContext.data.page" @update:modelValue="onClickPage" :length="pageContext.data.pagesCount" v-if="shouldShowPagination()" :total-visible="pageContext.data.pagesCount < 10 && !isMobile() ? 10 : undefined"/>
+                </v-container>
             </div>
         </template>
         <div v-else>
@@ -72,7 +78,7 @@
 <script>
 import Mark from "mark.js";
 import {getHumanReadableDate, hasLength, getLoginColoredStyle, SEARCH_MODE_POSTS, PAGE_PARAM, PAGE_SIZE} from "#root/common/utils";
-import {path_prefix, blog_post, blogIdPrefix, profile, blog} from "#root/common/router/routes";
+import {path_prefix, blog_post, blogIdPrefix, profile} from "#root/common/router/routes";
 import {usePageContext} from "#root/renderer/usePageContext.js";
 import debounce from "lodash/debounce.js";
 import bus, {SEARCH_STRING_CHANGED} from "#root/common/bus.js";
