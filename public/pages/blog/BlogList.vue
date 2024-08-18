@@ -1,14 +1,14 @@
 <template>
   <v-container class="ma-0 pa-0 my-list-container" fluid>
-    <template v-if="theData.loading">
+    <template v-if="pageContext.data.loading">
         <h1>Loading</h1>
     </template>
     <template v-else>
-        <template v-if="theData.items.length">
+        <template v-if="pageContext.data.items.length">
             <div class="my-blog-scroller" id="blog-post-list">
 
                 <v-card
-                    v-for="(item, index) in theData.items"
+                    v-for="(item, index) in pageContext.data.items"
                     :key="item.id"
                     :id="getItemId(item.id)"
                     class="mb-2 mr-2 blog-item-root"
@@ -59,7 +59,7 @@
                 </v-card>
 
                 <v-divider/>
-                <v-pagination v-model="theData.page" @update:modelValue="onClickPage" :length="theData.pagesCount" v-if="shouldShowPagination()" :total-visible="theData.pagesCount < 10 && !isMobile() ? 10 : undefined"/>
+                <v-pagination v-model="pageContext.data.page" @update:modelValue="onClickPage" :length="pageContext.data.pagesCount" v-if="shouldShowPagination()" :total-visible="pageContext.data.pagesCount < 10 && !isMobile() ? 10 : undefined"/>
             </div>
         </template>
         <div v-else>
@@ -86,12 +86,6 @@ export default {
     return {
         pageContext
     }
-  },
-  data() {
-      //return this.pageContext.data;
-      return {
-          // ...this.theData
-      }
   },
   methods: {
     getLoginColoredStyle,
@@ -141,7 +135,7 @@ export default {
     },
 
     shouldShowPagination() {
-        return this.theData.count > PAGE_SIZE
+        return this.pageContext.data.count > PAGE_SIZE
     },
     performMarking() {
       this.$nextTick(() => {
@@ -151,11 +145,6 @@ export default {
           }
       })
     },
-  },
-  computed: {
-      theData() {
-          return this.pageContext.data;
-      },
   },
   created() {
       this.onSearchStringChanged = debounce(this.onSearchStringChanged, 700, {leading:false, trailing:true})
