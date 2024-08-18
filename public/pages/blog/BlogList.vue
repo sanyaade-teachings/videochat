@@ -112,12 +112,14 @@ export default {
       return blogIdPrefix + id
     },
     onClickPage(e) {
+      this.loading = true; // false will be set with the new data from server
+
       let actualPage = e--;
 
       const url = new URL(window.location.href);
       url.searchParams.set(PAGE_PARAM, actualPage);
 
-      window.location.href = url.toString();
+      navigate(url.pathname + url.search);
     },
     onSearchStringChanged(searchString) {
         this.loading = true; // false will be set with the new data from server
