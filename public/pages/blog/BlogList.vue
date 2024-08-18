@@ -120,7 +120,6 @@ export default {
       window.location.href = url.toString();
     },
     onSearchStringChanged(searchString) {
-        this.markInstance.unmark();
         this.loading = true; // false will be set with the new data from server
 
         const url = new URL(window.location.href);
