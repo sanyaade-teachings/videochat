@@ -131,9 +131,7 @@ export default {
             url.searchParams.delete(SEARCH_MODE_POSTS);
         }
 
-        this.$nextTick(()=>{
-            navigate(url.pathname + url.search);
-        })
+        navigate(url.pathname + url.search);
     },
 
     shouldShowPagination() {
