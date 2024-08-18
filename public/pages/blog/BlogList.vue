@@ -141,7 +141,7 @@ export default {
     },
 
     shouldShowPagination() {
-        return this.count > PAGE_SIZE
+        return this.theData.count > PAGE_SIZE
     },
     performMarking() {
       this.$nextTick(() => {
