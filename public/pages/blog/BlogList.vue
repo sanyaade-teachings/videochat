@@ -133,7 +133,6 @@ export default {
 
         this.$nextTick(()=>{
             navigate(url.pathname + url.search);
-            this.performMarking();
         })
     },
 
