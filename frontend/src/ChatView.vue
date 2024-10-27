@@ -30,7 +30,7 @@
                 </v-alert>
               </div>
 
-              <MessageList :canResend="chatStore.chatDto.canResend" :blog="chatStore.chatDto.blog"/>
+              <MessageList :canResend="chatStore.chatDto.canResend" :blog="chatStore.chatDto.blog" :isCompact="true"/>
 
               <v-btn v-if="chatStore.showScrollDown" variant="elevated" color="primary" icon="mdi-arrow-down-thick" :class="scrollDownClass()" @click="scrollDown()"></v-btn>
               <v-btn v-if="isMobile()" variant="elevated" color="primary" icon="mdi-plus" class="new-fab-b" @click="openNewMessageDialog()"></v-btn>

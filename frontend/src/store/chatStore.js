@@ -70,6 +70,7 @@ export const useChatStore = defineStore('chat', {
         oppositeUserLastLoginDateTime: null,
         correlationId: null,
         videoTokenId: null,
+        compactMessages: false,
     }
   },
   actions: {
