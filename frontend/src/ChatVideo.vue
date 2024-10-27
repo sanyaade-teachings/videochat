@@ -1,9 +1,9 @@
 <template>
-    <template v-if="presenter">
+    <template v-if="presenterEnabled">
         <splitpanes :dbl-click-splitter="false">
             <pane size="80">
                 <div class="video-presenter-container-element">
-                    <video id="presenter" class="video-presenter-element" ref="presenterRef"/>
+                    <video class="video-presenter-element" ref="presenterRef"/>
                 </div>
             </pane>
             <pane>
@@ -68,7 +68,7 @@ export default {
     refreshLocalMutedInAppBarMixin(),
     videoPositionMixin(),
   ],
-  props: ['videoIsOnTopProperty', 'presenter', 'chatId'],
+  props: ['videoIsOnTopProperty', 'presenterEnabled', 'chatId'],
   data() {
     return {
       room: null,
@@ -202,7 +202,7 @@ export default {
     // TODO also in presenter mode apply the decreased resolution for side the video elements
     // TODO think how to reuse the presenter mode with egress
     updatePresenterIfNeed(cameraPub) {
-        if (this.presenter) {
+        if (this.presenterEnabled) {
             if (this.presenterVideoPublication) {
                 this.presenterVideoPublication.videoTrack?.detach(this.$refs.presenterRef);
             }

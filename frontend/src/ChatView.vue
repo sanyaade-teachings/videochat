@@ -42,7 +42,7 @@
         </splitpanes>
       </pane>
       <pane v-if="showRightPane()" min-size="15" :size="rightPaneSize()">
-        <ChatVideo v-if="chatDtoIsReady" :videoIsOnTop="videoIsOnTop()" :chatId="chatId" :presenter="true"/>
+        <ChatVideo v-if="chatDtoIsReady" :videoIsOnTop="videoIsOnTop()" :chatId="chatId" :presenterEnabled="true"/>
       </pane>
 
     </splitpanes>
