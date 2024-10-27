@@ -196,7 +196,6 @@ export default {
       }
     },
 
-    // TODO видео обрезается снизу
     // TODO сохранять позиции SplitPane
     // TODO убрать кнопки на сообщениях при уменьшении размера
     // TODO add a presenter mode property and create html elements (old-fashioned all equal videos or the new with presenter) in accordance with
@@ -673,25 +672,18 @@ export default {
     display flex
     flex-direction column
     align-items: center;
-    //width: fit-content
-    //block-size: fit-content
-    //box-sizing: content-box
 
     width 100%
     height 100%
-    margin-top auto
-    margin-bottom auto
 }
 
 
 .video-presenter-element {
-    // object-fit: contain;
     //box-sizing: border-box;
     width: 100% !important
     height: 100% !important
-    min-width: 100% !important
-    object-fit: cover;
-    z-index 2
+    object-fit: contain;
+    background black
 }
 
 
