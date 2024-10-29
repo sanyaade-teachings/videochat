@@ -218,12 +218,16 @@ export default {
         this.presenterVideoPublication = null;
       }
     },
-    updatePresenterIfNeed(cameraPub) {
+    updatePresenterIfNeed(stream, isSpeaking) {
         if (this.presenterEnabled) {
-          if (this.presenterVideoPublication?.trackSid != cameraPub.trackSid && this.getPresenterPriority(cameraPub) > this.getPresenterPriority(this.presenterVideoPublication)) {
+          if (this.presenterVideoPublication?.trackSid != stream.trackSid && (
+              isSpeaking ||
+              this.getPresenterPriority(stream) > this.getPresenterPriority(this.presenterVideoPublication)
+          )) {
             this.detachPresenter();
-            cameraPub?.videoTrack?.attach(this.$refs.presenterRef);
-            this.presenterVideoPublication = cameraPub;
+
+            stream?.videoTrack?.attach(this.$refs.presenterRef);
+            this.presenterVideoPublication = stream;
           }
         }
     },
@@ -250,6 +254,19 @@ export default {
 
       this.refreshLocalMicrophoneAppBarButtons();
     },
+    electNewPresenterIfNeed(userIdentity) {
+      // about second: detachPresenter() leaves presenterVideoPublication null
+      if (this.presenterEnabled && !this.presenterVideoPublication) {
+        for (const componentWrapper of this.getByUser(userIdentity)) {
+          const component = componentWrapper.component;
+          const vs = component.getVideoStream();
+          if (vs && vs.kind == "video") {
+            this.updatePresenterIfNeed(vs);
+            break
+          }
+        }
+      }
+    },
     removeComponent(userIdentity, track) {
       for (const componentWrapper of this.getByUser(userIdentity)) {
         const component = componentWrapper.component;
@@ -272,17 +289,7 @@ export default {
         }
       }
 
-      // about second: detachPresenter() leaves presenterVideoPublication null
-      if (this.presenterEnabled && !this.presenterVideoPublication) {
-        for (const componentWrapper of this.getByUser(userIdentity)) {
-          const component = componentWrapper.component;
-          const vs = component.getVideoStream();
-          if (vs && vs.kind == "video") {
-            this.updatePresenterIfNeed(vs);
-            break
-          }
-        }
-      }
+      this.electNewPresenterIfNeed(userIdentity);
     },
 
     handleActiveSpeakerChange(speakers) {
@@ -299,7 +306,7 @@ export default {
             component.setSpeakingWithTimeout(1000);
 
             const videoStream = component.getVideoStream();
-            this.updatePresenterIfNeed(videoStream);
+            this.updatePresenterIfNeed(videoStream, true);
           }
         }
       }
