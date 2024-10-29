@@ -272,12 +272,15 @@ export default {
         }
       }
 
-      for (const componentWrapper of this.getByUser(userIdentity)) {
-        const component = componentWrapper.component;
-        const vs = component.getVideoStream();
-        if (vs && vs.kind == "video") {
-          this.updatePresenterIfNeed(vs);
-          break
+      // detachPresenter leaves presenterVideoPublication null
+      if (!this.presenterVideoPublication) {
+        for (const componentWrapper of this.getByUser(userIdentity)) {
+          const component = componentWrapper.component;
+          const vs = component.getVideoStream();
+          if (vs && vs.kind == "video") {
+            this.updatePresenterIfNeed(vs);
+            break
+          }
         }
       }
     },
