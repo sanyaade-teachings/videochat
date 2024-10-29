@@ -195,19 +195,36 @@ export default {
         }
       }
     },
-
+    getPresenterPriority(pub) {
+      if (!pub) {
+        return -1
+      }
+      switch (pub.source) {
+        case "camera":
+          return 1;
+        case "screen_share":
+          return 2
+        default:
+            return 0
+      }
+    },
     // TODO сохранять позиции SplitPane
-    // TODO убрать кнопки на сообщениях при уменьшении размера
     // TODO add a presenter mode property and create html elements (old-fashioned all equal videos or the new with presenter) in accordance with
     // TODO also in presenter mode apply the decreased resolution for side the video elements
     // TODO think how to reuse the presenter mode with egress
+    detachPresenter() {
+      if (this.presenterVideoPublication) {
+        this.presenterVideoPublication.videoTrack?.detach(this.$refs.presenterRef);
+        this.presenterVideoPublication = null;
+      }
+    },
     updatePresenterIfNeed(cameraPub) {
         if (this.presenterEnabled) {
-            if (this.presenterVideoPublication) {
-                this.presenterVideoPublication.videoTrack?.detach(this.$refs.presenterRef);
-            }
+          if (this.presenterVideoPublication?.trackSid != cameraPub.trackSid && this.getPresenterPriority(cameraPub) > this.getPresenterPriority(this.presenterVideoPublication)) {
+            this.detachPresenter();
             cameraPub?.videoTrack?.attach(this.$refs.presenterRef);
             this.presenterVideoPublication = cameraPub;
+          }
         }
     },
 
@@ -248,6 +265,19 @@ export default {
             console.debug("Something wrong on removing child", e, component.$el, this.videoContainerDiv);
           }
           this.removeComponentForUser(userIdentity, componentWrapper);
+
+          if (this.presenterVideoPublication && this.presenterVideoPublication.trackSid == component.getVideoStream()?.trackSid) {
+            this.detachPresenter();
+          }
+        }
+      }
+
+      for (const componentWrapper of this.getByUser(userIdentity)) {
+        const component = componentWrapper.component;
+        const vs = component.getVideoStream();
+        if (vs && vs.kind == "video") {
+          this.updatePresenterIfNeed(vs);
+          break
         }
       }
     },
