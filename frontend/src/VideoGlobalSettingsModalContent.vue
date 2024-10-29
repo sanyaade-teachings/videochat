@@ -32,12 +32,25 @@
                         :label="$vuetify.locale.t('$vuetify.video_position')"
                         :items="positionItems"
                         density="comfortable"
+                        hide-details
                         color="primary"
                         @update:modelValue="changeVideoPosition"
                         v-model="videoPosition"
                         variant="underlined"
                     ></v-select>
 
+                    <v-row no-gutters class="my-4">
+                        <v-col>
+                            <v-checkbox
+                                density="comfortable"
+                                color="primary"
+                                hide-details
+                                v-model="presenterEnabled"
+                                @update:modelValue="changePresenterEnabled"
+                                :label="$vuetify.locale.t('$vuetify.video_presenter_enable')"
+                            ></v-checkbox>
+                        </v-col>
+                    </v-row>
 
                     <v-select
                         :disabled="serverPreferredCodec"
@@ -129,31 +142,31 @@
 
 <script>
 import bus, {
+  CHANGE_PRESENTER,
   CHANGE_VIDEO_SOURCE,
   CHANGE_VIDEO_SOURCE_DIALOG, CHOOSING_VIDEO_SOURCE_CANCELED,
   REQUEST_CHANGE_VIDEO_PARAMETERS,
-  VIDEO_PARAMETERS_CHANGED,
 } from "./bus/bus";
     import {
-        setVideoResolution,
-        getStoredAudioDevicePresents,
-        setStoredAudioPresents,
-        getStoredVideoDevicePresents,
-        setStoredVideoPresents,
-        setScreenResolution,
-        setStoredVideoSimulcast,
-        setStoredScreenSimulcast,
-        setStoredRoomDynacast,
-        setStoredRoomAdaptiveStream,
-        VIDEO_POSITION_AUTO,
-        VIDEO_POSITION_TOP,
-        VIDEO_POSITION_SIDE,
-        setStoredVideoPosition,
-        getStoredVideoPosition,
-        setStoredCodec,
-        NULL_CODEC,
-        NULL_SCREEN_RESOLUTION,
-        setStoredCallVideoDeviceId, setStoredCallAudioDeviceId
+      setVideoResolution,
+      getStoredAudioDevicePresents,
+      setStoredAudioPresents,
+      getStoredVideoDevicePresents,
+      setStoredVideoPresents,
+      setScreenResolution,
+      setStoredVideoSimulcast,
+      setStoredScreenSimulcast,
+      setStoredRoomDynacast,
+      setStoredRoomAdaptiveStream,
+      VIDEO_POSITION_AUTO,
+      VIDEO_POSITION_TOP,
+      VIDEO_POSITION_SIDE,
+      setStoredVideoPosition,
+      getStoredVideoPosition,
+      setStoredCodec,
+      NULL_CODEC,
+      NULL_SCREEN_RESOLUTION,
+      setStoredCallVideoDeviceId, setStoredCallAudioDeviceId, getStoredPresenter, setStoredPresenter
     } from "./store/localStore";
     import {videochat_name} from "./router/routes";
     import videoServerSettingsMixin from "@/mixins/videoServerSettingsMixin";
@@ -166,6 +179,7 @@ import bus, {
                 audioPresents: null,
                 videoPresents: null,
                 videoPosition: null,
+                presenterEnabled: false,
 
                 tempStream: null,
             }
@@ -175,9 +189,9 @@ import bus, {
                 this.audioPresents = getStoredAudioDevicePresents();
                 this.videoPresents = getStoredVideoDevicePresents();
                 this.videoPosition = getStoredVideoPosition();
+                this.presenterEnabled = getStoredPresenter();
 
                 this.initServerData();
-
             },
             isVideoRoute() {
                 return this.$route.name == videochat_name
@@ -197,6 +211,10 @@ import bus, {
             changeVideoPresents(v) {
                 setStoredVideoPresents(v);
                 bus.emit(REQUEST_CHANGE_VIDEO_PARAMETERS);
+            },
+            changePresenterEnabled(v) {
+              setStoredPresenter(v);
+              bus.emit(CHANGE_PRESENTER); // TODO probably just use store
             },
             changeVideoSimulcast(v) {
                 setStoredVideoSimulcast(v);

@@ -191,6 +191,24 @@ export const setStoredVideoPosition = (v) => {
     localStorage.setItem(KEY_VIDEO_POSITION, JSON.stringify(v));
 }
 
+
+export const KEY_PRESENTER = 'presenter';
+
+export const getStoredPresenter = () => {
+    let v = JSON.parse(localStorage.getItem(KEY_PRESENTER));
+    if (v === null) {
+        console.log("Resetting presenter to default");
+        setStoredPresenter(true);
+        v = JSON.parse(localStorage.getItem(KEY_PRESENTER));
+    }
+    return v;
+}
+
+export const setStoredPresenter = (v) => {
+    localStorage.setItem(KEY_PRESENTER, JSON.stringify(v));
+}
+
+
 export const NULL_CODEC = 'null';
 
 export const KEY_CODEC = 'codec';
@@ -250,20 +268,6 @@ export const removeTopChatPosition = () => {
     localStorage.removeItem(KEY_TOP_CHAT);
 }
 
-
-const KEY_TOP_BLOG = "topBlog"
-
-export const setTopBlogPosition = (userId) => {
-    localStorage.setItem(KEY_TOP_BLOG, JSON.stringify(userId));
-}
-
-export const getTopBlogPosition = () => {
-    return JSON.parse(localStorage.getItem(KEY_TOP_BLOG));
-}
-
-export const removeTopBlogPosition = () => {
-    localStorage.removeItem(KEY_TOP_BLOG);
-}
 
 export const KEY_MESSAGE_EDIT_NORMALIZE_TEXT = 'messageEditNormalizeText';
 

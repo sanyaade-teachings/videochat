@@ -323,5 +323,6 @@ export default {
     object_storage: "S3 storage",
     queue_broker: "Queue broker",
     database: "Database",
-    set_password: "Set password"
+    set_password: "Set password",
+    video_presenter_enable: "Enable presenter"
 }

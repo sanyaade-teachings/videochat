@@ -323,5 +323,6 @@ export default {
     object_storage: "S3-хранилище",
     queue_broker: "Брокер очередей",
     database: "База данных",
-    set_password: "Задать пароль"
+    set_password: "Задать пароль",
+    video_presenter_enable: "Включить презентатор"
 }
