@@ -640,6 +640,9 @@ export default {
             tokenId: this.chatStore.videoTokenId
         }
     });
+
+    this.detachPresenter();
+
     this.stopRoom().then(()=>{
       console.log("Cleaning videoContainerDiv");
       this.videoContainerDiv = null;
