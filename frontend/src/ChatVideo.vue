@@ -266,14 +266,14 @@ export default {
           }
           this.removeComponentForUser(userIdentity, componentWrapper);
 
-          if (this.presenterVideoPublication && this.presenterVideoPublication.trackSid == component.getVideoStream()?.trackSid) {
+          if (this.presenterEnabled && this.presenterVideoPublication && this.presenterVideoPublication.trackSid == component.getVideoStream()?.trackSid) {
             this.detachPresenter();
           }
         }
       }
 
-      // detachPresenter leaves presenterVideoPublication null
-      if (!this.presenterVideoPublication) {
+      // about second: detachPresenter() leaves presenterVideoPublication null
+      if (this.presenterEnabled && !this.presenterVideoPublication) {
         for (const componentWrapper of this.getByUser(userIdentity)) {
           const component = componentWrapper.component;
           const vs = component.getVideoStream();
