@@ -71,6 +71,7 @@ export const useChatStore = defineStore('chat', {
         correlationId: null,
         videoTokenId: null,
         compactMessages: false,
+        videoPosition: null,
     }
   },
   actions: {

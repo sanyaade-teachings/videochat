@@ -1,15 +1,15 @@
-import {getStoredVideoPosition, VIDEO_POSITION_AUTO, VIDEO_POSITION_TOP} from "@/store/localStore";
+import {VIDEO_POSITION_AUTO, VIDEO_POSITION_TOP} from "@/store/localStore";
 import {videochat_name} from "@/router/routes";
 
 export default () => {
     return {
         methods: {
             videoIsOnTop() {
-              const stored = getStoredVideoPosition();
+              const stored = this.chatStore.videoPosition;
               if (stored == VIDEO_POSITION_AUTO) {
                 return true // both mobile and desktop
               } else {
-                return getStoredVideoPosition() == VIDEO_POSITION_TOP;
+                return stored == VIDEO_POSITION_TOP;
               }
             },
 

@@ -35,7 +35,7 @@
                         hide-details
                         color="primary"
                         @update:modelValue="changeVideoPosition"
-                        v-model="videoPosition"
+                        v-model="chatStore.videoPosition"
                         variant="underlined"
                     ></v-select>
 
@@ -171,6 +171,8 @@ import bus, {
     import {videochat_name} from "./router/routes";
     import videoServerSettingsMixin from "@/mixins/videoServerSettingsMixin";
     import {PURPOSE_CALL} from "@/utils.js";
+import {mapStores} from "pinia";
+import {useChatStore} from "@/store/chatStore.js";
 
     export default {
         mixins: [videoServerSettingsMixin()],
@@ -178,7 +180,6 @@ import bus, {
             return {
                 audioPresents: null,
                 videoPresents: null,
-                videoPosition: null,
                 presenterEnabled: false,
 
                 tempStream: null,
@@ -188,7 +189,7 @@ import bus, {
             showModal() {
                 this.audioPresents = getStoredAudioDevicePresents();
                 this.videoPresents = getStoredVideoDevicePresents();
-                this.videoPosition = getStoredVideoPosition();
+                this.chatStore.videoPosition = getStoredVideoPosition();
                 this.presenterEnabled = getStoredPresenter();
 
                 this.initServerData();
@@ -233,6 +234,7 @@ import bus, {
                 bus.emit(REQUEST_CHANGE_VIDEO_PARAMETERS);
             },
             changeVideoPosition(v) {
+                this.chatStore.videoPosition = v;
                 setStoredVideoPosition(v);
                 if (this.$route.name == videochat_name) {
                     this.setWarning(this.$vuetify.locale.t('$vuetify.video_position_changed_apply'));
@@ -274,7 +276,8 @@ import bus, {
             },
         },
         computed: {
-            displayQualityItems() {
+          ...mapStores(useChatStore),
+          displayQualityItems() {
                 // ./frontend/node_modules/livekit-client/dist/room/track/options.d.ts
                 return ['h180', 'h360', 'h720', 'h1080', 'h1440', 'h2160']
             },

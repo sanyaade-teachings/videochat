@@ -6,43 +6,45 @@
 
       <pane>
         <splitpanes ref="splInner" class="default-theme" :dbl-click-splitter="false" horizontal @resize="onPanelResized($event)" @pane-add="onPanelAdd($event)" @pane-remove="onPanelRemove($event)">
-          <pane v-if="showTopPane()" min-size="15" :size="topPaneSize()">
-            <ChatVideo v-if="chatDtoIsReady" :videoIsOnTopProperty="videoIsOnTop()" :chatId="chatId" />
-          </pane>
-
           <pane style="width: 100%; background: white" :class="messageListPaneClass()">
-              <v-tooltip
-                v-if="broadcastMessage"
-                :model-value="showTooltip"
-                activator=".message-edit-pane"
-                location="bottom start"
-              >
-                <span v-html="broadcastMessage"></span>
-              </v-tooltip>
+            <splitpanes class="default-theme" :dbl-click-splitter="false" :horizontal="videoIsOnTop()">
 
-              <div v-if="pinnedPromoted" :key="pinnedPromotedKey" class="pinned-promoted" :title="$vuetify.locale.t('$vuetify.pinned_message')">
-                <v-alert
-                  color="red-lighten-4"
-                  elevation="2"
-                  density="compact"
+              <pane v-if="isAllowedVideo()" min-size="15">
+                <ChatVideo v-if="chatDtoIsReady" :videoIsOnTopProperty="videoIsOnTop()" :chatId="chatId" />
+              </pane>
+
+              <pane>
+                <v-tooltip
+                    v-if="broadcastMessage"
+                    :model-value="showTooltip"
+                    activator=".message-edit-pane"
+                    location="bottom start"
                 >
-                  <router-link :to="getPinnedRouteObject(pinnedPromoted)" class="pinned-text" v-html="pinnedPromoted.text"></router-link>
-                </v-alert>
-              </div>
+                  <span v-html="broadcastMessage"></span>
+                </v-tooltip>
 
-              <MessageList :canResend="chatStore.chatDto.canResend" :blog="chatStore.chatDto.blog" :isCompact="true"/>
+                <div v-if="pinnedPromoted" :key="pinnedPromotedKey" class="pinned-promoted" :title="$vuetify.locale.t('$vuetify.pinned_message')">
+                  <v-alert
+                      color="red-lighten-4"
+                      elevation="2"
+                      density="compact"
+                  >
+                    <router-link :to="getPinnedRouteObject(pinnedPromoted)" class="pinned-text" v-html="pinnedPromoted.text"></router-link>
+                  </v-alert>
+                </div>
 
-              <v-btn v-if="chatStore.showScrollDown" variant="elevated" color="primary" icon="mdi-arrow-down-thick" :class="scrollDownClass()" @click="scrollDown()"></v-btn>
-              <v-btn v-if="isMobile()" variant="elevated" color="primary" icon="mdi-plus" class="new-fab-b" @click="openNewMessageDialog()"></v-btn>
+                <MessageList :canResend="chatStore.chatDto.canResend" :blog="chatStore.chatDto.blog" :isCompact="true"/>
 
+                <v-btn v-if="chatStore.showScrollDown" variant="elevated" color="primary" icon="mdi-arrow-down-thick" :class="scrollDownClass()" @click="scrollDown()"></v-btn>
+                <v-btn v-if="isMobile()" variant="elevated" color="primary" icon="mdi-plus" class="new-fab-b" @click="openNewMessageDialog()"></v-btn>
+              </pane>
+
+            </splitpanes>
           </pane>
           <pane class="message-edit-pane" v-if="showBottomPane()" :size="bottomPaneSize()">
             <MessageEdit :chatId="this.chatId"/>
           </pane>
         </splitpanes>
-      </pane>
-      <pane v-if="showRightPane()" min-size="15" :size="rightPaneSize()">
-        <ChatVideo v-if="chatDtoIsReady" :videoIsOnTop="videoIsOnTop()" :chatId="chatId" :presenterEnabled="true"/>
       </pane>
 
     </splitpanes>
