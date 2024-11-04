@@ -1,18 +1,18 @@
 <template>
     <template v-if="presenterEnabled">
-        <splitpanes :dbl-click-splitter="false">
+        <splitpanes :dbl-click-splitter="false" :horizontal="videoIsOnTop()">
             <pane size="80">
                 <div class="video-presenter-container-element">
                     <video class="video-presenter-element" ref="presenterRef"/>
                 </div>
             </pane>
             <pane>
-                <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTopProperty ? 'video-container-position-top' : 'video-container-position-side'"></v-col>
+                <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTop() ? 'video-container-position-top' : 'video-container-position-side'"></v-col>
             </pane>
         </splitpanes>
     </template>
     <template v-else>
-        <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTopProperty ? 'video-container-position-top' : 'video-container-position-side'"></v-col>
+        <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTop() ? 'video-container-position-top' : 'video-container-position-side'"></v-col>
     </template>
 </template>
 
@@ -68,7 +68,7 @@ export default {
     refreshLocalMutedInAppBarMixin(),
     videoPositionMixin(),
   ],
-  props: ['videoIsOnTopProperty', 'presenterEnabled', 'chatId'],
+  props: ['presenterEnabled', 'chatId'],
   data() {
     return {
       room: null,
@@ -87,7 +87,7 @@ export default {
       const app = createApp(UserVideo, {
         id: videoTagId,
         localVideoProperties: localVideoProperties,
-        videoIsOnTop: this.videoIsOnTopProperty,
+        videoIsOnTop: this.videoIsOnTop(),
         initialShowControls: localVideoProperties != null && this.isMobile()
       });
       app.config.globalProperties.isMobile = () => {
@@ -96,7 +96,7 @@ export default {
       app.use(vuetify);
       app.use(pinia);
       const containerEl = document.createElement("div");
-      if (this.videoIsOnTopProperty) {
+      if (this.videoIsOnTop()) { // TODO react on change
         containerEl.className = 'video-component-wrapper-position-top';
       } else {
         containerEl.className = 'video-component-wrapper-position-side';

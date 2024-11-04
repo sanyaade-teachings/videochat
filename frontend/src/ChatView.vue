@@ -4,47 +4,41 @@
         <ChatList :embedded="true" v-if="isAllowedChatList()" ref="chatListRef"/>
       </pane>
 
-      <pane>
-        <splitpanes ref="splInner" class="default-theme" :dbl-click-splitter="false" horizontal @resize="onPanelResized($event)" @pane-add="onPanelAdd($event)" @pane-remove="onPanelRemove($event)">
-          <pane style="width: 100%; background: white" :class="messageListPaneClass()">
-            <splitpanes class="default-theme" :dbl-click-splitter="false" :horizontal="videoIsOnTop()">
+      <pane style="width: 100%; background: white" :class="messageListPaneClass()">
+        <splitpanes class="default-theme" :dbl-click-splitter="false" horizontal>
+          <pane>
+            <v-tooltip
+                v-if="broadcastMessage"
+                :model-value="showTooltip"
+                activator=".message-edit-pane"
+                location="bottom start"
+            >
+              <span v-html="broadcastMessage"></span>
+            </v-tooltip>
 
-              <pane v-if="isAllowedVideo()" min-size="15">
-                <ChatVideo v-if="chatDtoIsReady" :videoIsOnTopProperty="videoIsOnTop()" :chatId="chatId" />
-              </pane>
+            <div v-if="pinnedPromoted" :key="pinnedPromotedKey" class="pinned-promoted" :title="$vuetify.locale.t('$vuetify.pinned_message')">
+              <v-alert
+                  color="red-lighten-4"
+                  elevation="2"
+                  density="compact"
+              >
+                <router-link :to="getPinnedRouteObject(pinnedPromoted)" class="pinned-text" v-html="pinnedPromoted.text"></router-link>
+              </v-alert>
+            </div>
 
-              <pane>
-                <v-tooltip
-                    v-if="broadcastMessage"
-                    :model-value="showTooltip"
-                    activator=".message-edit-pane"
-                    location="bottom start"
-                >
-                  <span v-html="broadcastMessage"></span>
-                </v-tooltip>
+            <MessageList :canResend="chatStore.chatDto.canResend" :blog="chatStore.chatDto.blog" :isCompact="true"/>
 
-                <div v-if="pinnedPromoted" :key="pinnedPromotedKey" class="pinned-promoted" :title="$vuetify.locale.t('$vuetify.pinned_message')">
-                  <v-alert
-                      color="red-lighten-4"
-                      elevation="2"
-                      density="compact"
-                  >
-                    <router-link :to="getPinnedRouteObject(pinnedPromoted)" class="pinned-text" v-html="pinnedPromoted.text"></router-link>
-                  </v-alert>
-                </div>
-
-                <MessageList :canResend="chatStore.chatDto.canResend" :blog="chatStore.chatDto.blog" :isCompact="true"/>
-
-                <v-btn v-if="chatStore.showScrollDown" variant="elevated" color="primary" icon="mdi-arrow-down-thick" :class="scrollDownClass()" @click="scrollDown()"></v-btn>
-                <v-btn v-if="isMobile()" variant="elevated" color="primary" icon="mdi-plus" class="new-fab-b" @click="openNewMessageDialog()"></v-btn>
-              </pane>
-
-            </splitpanes>
+            <v-btn v-if="chatStore.showScrollDown" variant="elevated" color="primary" icon="mdi-arrow-down-thick" :class="scrollDownClass()" @click="scrollDown()"></v-btn>
+            <v-btn v-if="isMobile()" variant="elevated" color="primary" icon="mdi-plus" class="new-fab-b" @click="openNewMessageDialog()"></v-btn>
           </pane>
           <pane class="message-edit-pane" v-if="showBottomPane()" :size="bottomPaneSize()">
             <MessageEdit :chatId="this.chatId"/>
           </pane>
         </splitpanes>
+      </pane>
+
+      <pane v-if="isAllowedVideo()" min-size="15">
+        <ChatVideo v-if="chatDtoIsReady" :chatId="chatId" />
       </pane>
 
     </splitpanes>
@@ -719,44 +713,44 @@ export default {
       this.setMiddlePane(ret);
     },
     setMiddlePane(ret) {
-      let middleSize = 100; // percents
-      let middlePaneIndex = 0;
-      if (this.showTopPane()) {
-        middleSize -= ret.topPane;
-        middlePaneIndex = 1;
-      }
-      if (this.showBottomPane()) {
-        let bottomPaneSize;
-        if (!this.chatStore.isEditingBigText) {
-          bottomPaneSize = ret.bottomPane;
-        } else {
-          bottomPaneSize = ret.bottomPaneBig;
-        }
-        middleSize -= bottomPaneSize;
-      }
-      this.$refs.splInner.panes[middlePaneIndex].size = middleSize;
+      // let middleSize = 100; // percents // TODO
+      // let middlePaneIndex = 0;
+      // if (this.showTopPane()) {
+      //   middleSize -= ret.topPane;
+      //   middlePaneIndex = 1;
+      // }
+      // if (this.showBottomPane()) {
+      //   let bottomPaneSize;
+      //   if (!this.chatStore.isEditingBigText) {
+      //     bottomPaneSize = ret.bottomPane;
+      //   } else {
+      //     bottomPaneSize = ret.bottomPaneBig;
+      //   }
+      //   middleSize -= bottomPaneSize;
+      // }
+      // this.$refs.splInner.panes[middlePaneIndex].size = middleSize;
     },
 
     onPanelAdd() {
       // console.debug("On panel add", this.$refs.splOuter.panes);
       this.$nextTick(() => {
-        const stored = this.getStored();
-        // console.debug("Restoring on add", stored)
-        this.restorePanelsSize(stored);
+        // const stored = this.getStored(); // TODO
+        // // console.debug("Restoring on add", stored)
+        // this.restorePanelsSize(stored);
       })
 
     },
     onPanelRemove() {
       // console.debug("On panel removed", this.$refs.splOuter.panes);
       this.$nextTick(() => {
-        const stored = this.getStored();
-        // console.debug("Restoring on remove", stored)
-        this.restorePanelsSize(stored);
+        // const stored = this.getStored(); // TODO
+        // // console.debug("Restoring on remove", stored)
+        // this.restorePanelsSize(stored);
       })
     },
     onPanelResized() {
       this.$nextTick(() => {
-        this.saveToStored(this.prepareForStore());
+        // this.saveToStored(this.prepareForStore()); // TODO
       })
     },
     scrollDown () {
