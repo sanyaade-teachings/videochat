@@ -62,6 +62,9 @@ const first = 'first';
 const second = 'second';
 const last = 'last';
 
+const classVideoComponentWrapperPositionTop = 'video-component-wrapper-position-top';
+const classVideoComponentWrapperPositionSide = 'video-component-wrapper-position-side';
+
 export default {
   mixins: [
     videoServerSettingsMixin(),
@@ -83,6 +86,13 @@ export default {
       return uuidv4();
     },
 
+    setContainerClass(containerEl, videoIsOnTop) {
+      if (videoIsOnTop) { // see also watch chatStore.videoPosition
+        containerEl.className = classVideoComponentWrapperPositionTop;
+      } else {
+        containerEl.className = classVideoComponentWrapperPositionSide;
+      }
+    },
     createComponent(userIdentity, position, videoTagId, localVideoProperties) {
       const app = createApp(UserVideo, {
         id: videoTagId,
@@ -95,11 +105,8 @@ export default {
       app.use(vuetify);
       app.use(pinia);
       const containerEl = document.createElement("div");
-      if (this.videoIsOnTop()) { // TODO react on change
-        containerEl.className = 'video-component-wrapper-position-top';
-      } else {
-        containerEl.className = 'video-component-wrapper-position-side';
-      }
+
+      this.setContainerClass(containerEl, this.videoIsOnTop());
 
       if (position == first) {
         this.insertChildAtIndex(this.videoContainerDiv, containerEl, 0);
@@ -611,6 +618,18 @@ export default {
   components: {
       Splitpanes,
       Pane,
+  },
+  watch: {
+    'chatStore.videoPosition': {
+      handler: function (newValue, oldValue) {
+        if (this.videoContainerDiv) {
+          const videoIsOnTop = this.videoIsOnTopPlain(newValue);
+          for (const containerEl of this.videoContainerDiv.children) {
+            this.setContainerClass(containerEl, videoIsOnTop);
+          }
+        }
+      }
+    }
   },
   async mounted() {
     this.initPositionAndPresenter();

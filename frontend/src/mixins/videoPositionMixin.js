@@ -4,13 +4,16 @@ import {videochat_name} from "@/router/routes";
 export default () => {
     return {
         methods: {
+            videoIsOnTopPlain(value) {
+                if (value == VIDEO_POSITION_AUTO) {
+                    return true // both mobile and desktop
+                } else {
+                    return value == VIDEO_POSITION_TOP;
+                }
+            },
             videoIsOnTop() {
               const stored = this.chatStore.videoPosition;
-              if (stored == VIDEO_POSITION_AUTO) {
-                return true // both mobile and desktop
-              } else {
-                return stored == VIDEO_POSITION_TOP;
-              }
+              return this.videoIsOnTopPlain(stored);
             },
 
             videoIsAtSide() {
