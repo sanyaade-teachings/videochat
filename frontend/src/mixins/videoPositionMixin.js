@@ -25,11 +25,6 @@ export default () => {
               if (this.isMobile()) {
                 return false;
               }
-              if (this.isVideoRoute()) {
-                if (this.videoIsAtSide()) {
-                  return false
-                }
-              }
               return true;
             },
             initPositionAndPresenter() {

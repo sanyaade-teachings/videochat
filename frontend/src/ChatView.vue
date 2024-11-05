@@ -37,7 +37,7 @@
         </splitpanes>
       </pane>
 
-      <pane v-if="isAllowedVideo()">
+      <pane v-if="isAllowedVideo()" size="60">
         <ChatVideo v-if="chatDtoIsReady" :chatId="chatId" />
       </pane>
 
