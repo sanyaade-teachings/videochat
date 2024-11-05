@@ -87,7 +87,7 @@ export default {
       const app = createApp(UserVideo, {
         id: videoTagId,
         localVideoProperties: localVideoProperties,
-        videoIsOnTop: this.videoIsOnTop(),
+        videoIsOnTop: this.videoIsOnTop(), // TODO react on change
         initialShowControls: localVideoProperties != null && this.isMobile()
       });
       app.config.globalProperties.isMobile = () => {
