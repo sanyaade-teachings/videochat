@@ -712,6 +712,7 @@ export default {
       }
       this.setMiddlePane(ret);
     },
+    // TODO fix pinned message look on mobile
     setMiddlePane(ret) {
       // let middleSize = 100; // percents // TODO
       // let middlePaneIndex = 0;
