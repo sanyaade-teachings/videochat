@@ -299,7 +299,6 @@ export default {
     new_message_notifications_in_browser: "Нотификация о новом сообщении в браузере",
     call_notifications_in_browser: "Нотификация о звонке в браузере",
     remove_sessions: "Удалить сессии",
-    video_position_changed_apply: "Чтобы это применилось, Вам нужно перезайти в звонок",
     video_successfully_reconnected: "Успешно передпоключились к серверу",
     send_message_after_media_insert: "Отправить сообщение",
     send_message_after_media_insert_description: "Отправить сообщение после вставки медиа",
