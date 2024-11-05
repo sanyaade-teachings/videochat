@@ -4,7 +4,7 @@
         <ChatList :embedded="true" v-if="isAllowedChatList()" ref="chatListRef"/>
       </pane>
 
-      <pane style="width: 100%; background: white" :class="messageListPaneClass()">
+      <pane style="background: white" :class="messageListPaneClass()">
         <splitpanes class="default-theme" :dbl-click-splitter="false" horizontal>
           <pane>
             <v-tooltip
@@ -37,7 +37,7 @@
         </splitpanes>
       </pane>
 
-      <pane v-if="isAllowedVideo()" min-size="15">
+      <pane v-if="isAllowedVideo()">
         <ChatVideo v-if="chatDtoIsReady" :chatId="chatId" />
       </pane>
 
