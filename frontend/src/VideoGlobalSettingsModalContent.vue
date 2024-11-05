@@ -45,7 +45,7 @@
                                 density="comfortable"
                                 color="primary"
                                 hide-details
-                                v-model="presenterEnabled"
+                                v-model="chatStore.presenterEnabled"
                                 @update:modelValue="changePresenterEnabled"
                                 :label="$vuetify.locale.t('$vuetify.video_presenter_enable')"
                             ></v-checkbox>
@@ -141,12 +141,11 @@
 </template>
 
 <script>
-import bus, {
-  CHANGE_PRESENTER,
-  CHANGE_VIDEO_SOURCE,
-  CHANGE_VIDEO_SOURCE_DIALOG, CHOOSING_VIDEO_SOURCE_CANCELED,
-  REQUEST_CHANGE_VIDEO_PARAMETERS,
-} from "./bus/bus";
+    import bus, {
+      CHANGE_VIDEO_SOURCE,
+      CHANGE_VIDEO_SOURCE_DIALOG, CHOOSING_VIDEO_SOURCE_CANCELED,
+      REQUEST_CHANGE_VIDEO_PARAMETERS,
+    } from "./bus/bus";
     import {
       setVideoResolution,
       getStoredAudioDevicePresents,
@@ -171,16 +170,19 @@ import bus, {
     import {videochat_name} from "./router/routes";
     import videoServerSettingsMixin from "@/mixins/videoServerSettingsMixin";
     import {PURPOSE_CALL} from "@/utils.js";
-import {mapStores} from "pinia";
-import {useChatStore} from "@/store/chatStore.js";
+    import {mapStores} from "pinia";
+    import {useChatStore} from "@/store/chatStore.js";
+    import videoPositionMixin from "@/mixins/videoPositionMixin.js";
 
     export default {
-        mixins: [videoServerSettingsMixin()],
+        mixins: [
+            videoServerSettingsMixin(),
+            videoPositionMixin(),
+        ],
         data () {
             return {
                 audioPresents: null,
                 videoPresents: null,
-                presenterEnabled: false,
 
                 tempStream: null,
             }
@@ -189,8 +191,8 @@ import {useChatStore} from "@/store/chatStore.js";
             showModal() {
                 this.audioPresents = getStoredAudioDevicePresents();
                 this.videoPresents = getStoredVideoDevicePresents();
-                this.chatStore.videoPosition = getStoredVideoPosition();
-                this.presenterEnabled = getStoredPresenter();
+
+                this.initPositionAndPresenter();
 
                 this.initServerData();
             },
@@ -215,7 +217,6 @@ import {useChatStore} from "@/store/chatStore.js";
             },
             changePresenterEnabled(v) {
               setStoredPresenter(v);
-              bus.emit(CHANGE_PRESENTER); // TODO probably just use store
             },
             changeVideoSimulcast(v) {
                 setStoredVideoSimulcast(v);

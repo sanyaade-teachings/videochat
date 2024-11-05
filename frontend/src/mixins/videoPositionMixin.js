@@ -1,4 +1,4 @@
-import {VIDEO_POSITION_AUTO, VIDEO_POSITION_TOP} from "@/store/localStore";
+import {getStoredPresenter, getStoredVideoPosition, VIDEO_POSITION_AUTO, VIDEO_POSITION_TOP} from "@/store/localStore";
 import {videochat_name} from "@/router/routes";
 
 export default () => {
@@ -32,7 +32,10 @@ export default () => {
               }
               return true;
             },
-
+            initPositionAndPresenter() {
+                this.chatStore.videoPosition = getStoredVideoPosition();
+                this.chatStore.presenterEnabled = getStoredPresenter();
+            },
         }
     }
 }

@@ -1,5 +1,5 @@
 <template>
-    <template v-if="presenterEnabled">
+    <template v-if="chatStore.presenterEnabled">
         <splitpanes :dbl-click-splitter="false" :horizontal="videoIsOnTop()">
             <pane size="80">
                 <div class="video-presenter-container-element">
@@ -35,12 +35,12 @@ import {
     getWebsocketUrlPrefix, isMobileBrowser, PURPOSE_CALL
 } from "@/utils";
 import {
-    getStoredAudioDevicePresents, getStoredCallAudioDeviceId, getStoredCallVideoDeviceId,
-    getStoredVideoDevicePresents,
-    NULL_CODEC,
-    NULL_SCREEN_RESOLUTION,
-    setStoredCallAudioDeviceId,
-    setStoredCallVideoDeviceId,
+  getStoredAudioDevicePresents, getStoredCallAudioDeviceId, getStoredCallVideoDeviceId,
+  getStoredVideoDevicePresents, getStoredVideoPosition,
+  NULL_CODEC,
+  NULL_SCREEN_RESOLUTION,
+  setStoredCallAudioDeviceId,
+  setStoredCallVideoDeviceId,
 } from "@/store/localStore";
 import bus, {
     ADD_SCREEN_SOURCE,
@@ -68,7 +68,7 @@ export default {
     refreshLocalMutedInAppBarMixin(),
     videoPositionMixin(),
   ],
-  props: ['presenterEnabled', 'chatId'],
+  props: ['chatId'],
   data() {
     return {
       room: null,
@@ -223,7 +223,7 @@ export default {
       }
     },
     updatePresenterIfNeed(stream, isSpeaking) {
-        if (this.presenterEnabled) {
+        if (this.chatStore.presenterEnabled) {
           if (this.presenterVideoPublication?.trackSid != stream.trackSid && (
               isSpeaking ||
               this.getPresenterPriority(stream) > this.getPresenterPriority(this.presenterVideoPublication)
@@ -260,7 +260,7 @@ export default {
     },
     electNewPresenterIfNeed(userIdentity) {
       // about second: detachPresenter() leaves presenterVideoPublication null
-      if (this.presenterEnabled && !this.presenterVideoPublication) {
+      if (this.chatStore.presenterEnabled && !this.presenterVideoPublication) {
         for (const componentWrapper of this.getByUser(userIdentity)) {
           const component = componentWrapper.component;
           const vs = component.getVideoStream();
@@ -287,7 +287,7 @@ export default {
           }
           this.removeComponentForUser(userIdentity, componentWrapper);
 
-          if (this.presenterEnabled && this.presenterVideoPublication && this.presenterVideoPublication.trackSid == component.getVideoStream()?.trackSid) {
+          if (this.chatStore.presenterEnabled && this.presenterVideoPublication && this.presenterVideoPublication.trackSid == component.getVideoStream()?.trackSid) {
             this.detachPresenter();
           }
         }
@@ -614,6 +614,8 @@ export default {
       Pane,
   },
   async mounted() {
+    this.initPositionAndPresenter();
+
     this.chatStore.setCallStateInCall();
 
     this.chatStore.initializingVideoCall = true;

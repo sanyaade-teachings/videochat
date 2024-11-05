@@ -72,6 +72,7 @@ export const useChatStore = defineStore('chat', {
         videoTokenId: null,
         compactMessages: false,
         videoPosition: null,
+        presenterEnabled: false,
     }
   },
   actions: {

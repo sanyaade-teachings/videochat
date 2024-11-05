@@ -41,8 +41,6 @@ export const OPEN_SETTINGS = "openSettings";
 export const REQUEST_CHANGE_VIDEO_PARAMETERS = "requestChangeVideoParameters";
 export const VIDEO_PARAMETERS_CHANGED = "videoParametersChanged";
 
-export const CHANGE_PRESENTER = "changePresenter";
-
 export const OPEN_SIMPLE_MODAL = "openSimpleModal";
 export const CLOSE_SIMPLE_MODAL = "closeSimpleModal";
 
