@@ -219,10 +219,17 @@ export default {
     // TODO подумать, где сделать кнопку (только для админа чата) "замьютить всех кроме меня"
     // TODO выбрать side + presenter по дефолту на десктопе, НО НЕ на мобилке
     detachPresenter() {
+      this.presenterVideoPublication.videoTrack?.detach(this.$refs.presenterRef);
+      this.presenterVideoPublication = null;
+    },
+    detachPresenterIfNeed() {
       if (this.presenterVideoPublication) {
-        this.presenterVideoPublication.videoTrack?.detach(this.$refs.presenterRef);
-        this.presenterVideoPublication = null;
+        this.detachPresenter();
       }
+    },
+    updatePresenter(stream) {
+      stream?.videoTrack?.attach(this.$refs.presenterRef);
+      this.presenterVideoPublication = stream;
     },
     updatePresenterIfNeed(stream, isSpeaking) {
         if (this.chatStore.presenterEnabled) {
@@ -230,10 +237,8 @@ export default {
               isSpeaking ||
               this.getPresenterPriority(stream) > this.getPresenterPriority(this.presenterVideoPublication)
           )) {
-            this.detachPresenter();
-
-            stream?.videoTrack?.attach(this.$refs.presenterRef);
-            this.presenterVideoPublication = stream;
+            this.detachPresenterIfNeed();
+            this.updatePresenter(stream);
           }
         }
     },
@@ -260,17 +265,19 @@ export default {
 
       this.refreshLocalMicrophoneAppBarButtons();
     },
-    electNewPresenterIfNeed(userIdentity) {
-      // about second: detachPresenter() leaves presenterVideoPublication null
+    electNewPresenterIfNeed() {
+      // about second: detachPresenterIfNeed() leaves presenterVideoPublication null
       if (this.chatStore.presenterEnabled && !this.presenterVideoPublication) {
-        for (const componentWrapper of this.getByUser(userIdentity)) {
-          const component = componentWrapper.component;
-          const vs = component.getVideoStream();
-          if (vs && vs.kind == "video") {
-            this.updatePresenterIfNeed(vs);
-            break
-          }
+        const vs = this.getAnyVideoStream();
+        if (vs) {
+          this.updatePresenterIfNeed(vs);
         }
+      }
+    },
+    electNewPresenter() {
+      const vs = this.getAnyVideoStream();
+      if (vs) {
+        this.updatePresenter(vs);
       }
     },
     removeComponent(userIdentity, track) {
@@ -290,12 +297,12 @@ export default {
           this.removeComponentForUser(userIdentity, componentWrapper);
 
           if (this.chatStore.presenterEnabled && this.presenterVideoPublication && this.presenterVideoPublication.trackSid == component.getVideoStream()?.trackSid) {
-            this.detachPresenter();
+            this.detachPresenterIfNeed();
           }
         }
       }
 
-      this.electNewPresenterIfNeed(userIdentity);
+      this.electNewPresenterIfNeed();
     },
 
     handleActiveSpeakerChange(speakers) {
@@ -607,6 +614,17 @@ export default {
       }
       return existingList;
     },
+    getAnyVideoStream() {
+      for (const [_, list] of this.userVideoComponents) {
+        for (const componentWrapper of list) {
+          const vs = componentWrapper.component.getVideoStream();
+          if (vs && vs.kind == "video") {
+            return vs;
+          }
+        }
+      }
+      return null;
+    },
   },
   computed: {
     ...mapStores(useChatStore),
@@ -622,6 +640,19 @@ export default {
           const videoIsOnTop = this.videoIsOnTopPlain(newValue);
           for (const containerEl of this.videoContainerDiv.children) {
             this.setContainerClass(containerEl, videoIsOnTop);
+          }
+        }
+      }
+    },
+    'chatStore.presenterEnabled': {
+      handler: function (newValue, oldValue) {
+        if (this.videoContainerDiv) {
+          if (newValue) {
+            this.$nextTick(()=>{
+              this.electNewPresenter();
+            })
+          } else {
+            this.detachPresenter();
           }
         }
       }
@@ -671,7 +702,7 @@ export default {
         }
     });
 
-    this.detachPresenter();
+    this.detachPresenterIfNeed();
 
     this.stopRoom().then(()=>{
       console.log("Cleaning videoContainerDiv");
