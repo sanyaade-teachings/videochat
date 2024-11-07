@@ -1,19 +1,14 @@
 <template>
-    <template v-if="chatStore.presenterEnabled">
-        <splitpanes :dbl-click-splitter="false" :horizontal="videoIsOnTop()">
-            <pane size="80">
-                <div class="video-presenter-container-element">
-                    <video class="video-presenter-element" ref="presenterRef"/>
-                </div>
-            </pane>
-            <pane>
-                <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTop() ? 'video-container-position-top' : 'video-container-position-side'"></v-col>
-            </pane>
-        </splitpanes>
-    </template>
-    <template v-else>
-        <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTop() ? 'video-container-position-top' : 'video-container-position-side'"></v-col>
-    </template>
+      <splitpanes :dbl-click-splitter="false" :horizontal="videoIsOnTop()">
+          <pane size="80" v-if="chatStore.presenterEnabled">
+              <div class="video-presenter-container-element">
+                  <video class="video-presenter-element" ref="presenterRef"/>
+              </div>
+          </pane>
+          <pane>
+              <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTop() ? 'video-container-position-top' : 'video-container-position-side'"></v-col>
+          </pane>
+      </splitpanes>
 </template>
 
 <script>
