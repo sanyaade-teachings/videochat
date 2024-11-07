@@ -196,15 +196,15 @@ export default {
         }
       }
     },
-    getPresenterPriority(pub) {
+    getPresenterPriority(pub, isSpeaking) {
       if (!pub) {
         return -1
       }
       switch (pub.source) {
         case "camera":
-          return 1;
+          return isSpeaking ? 2 : 1;
         case "screen_share":
-          return 2
+          return 3
         default:
             return 0
       }
@@ -233,10 +233,9 @@ export default {
     },
     updatePresenterIfNeed(stream, isSpeaking) {
         if (this.chatStore.presenterEnabled) {
-          if (this.presenterVideoPublication?.trackSid != stream.trackSid && (
-              isSpeaking ||
-              this.getPresenterPriority(stream) > this.getPresenterPriority(this.presenterVideoPublication)
-          )) {
+          if (this.presenterVideoPublication?.trackSid != stream.trackSid &&
+              this.getPresenterPriority(stream, isSpeaking) > this.getPresenterPriority(this.presenterVideoPublication)
+          ) {
             this.detachPresenterIfNeed();
             this.updatePresenter(stream);
           }
@@ -268,14 +267,14 @@ export default {
     electNewPresenterIfNeed() {
       // about second: detachPresenterIfNeed() leaves presenterVideoPublication null
       if (this.chatStore.presenterEnabled && !this.presenterVideoPublication) {
-        const vs = this.getAnyVideoStream();
+        const vs = this.getAnyPrioritizedVideoStream();
         if (vs) {
           this.updatePresenterIfNeed(vs);
         }
       }
     },
     electNewPresenter() {
-      const vs = this.getAnyVideoStream();
+      const vs = this.getAnyPrioritizedVideoStream();
       if (vs) {
         this.updatePresenter(vs);
       }
@@ -614,15 +613,25 @@ export default {
       }
       return existingList;
     },
-    getAnyVideoStream() {
+    getAnyPrioritizedVideoStream() {
+      const tmp = [];
       for (const [_, list] of this.userVideoComponents) {
         for (const componentWrapper of list) {
           const vs = componentWrapper.component.getVideoStream();
           if (vs && vs.kind == "video") {
-            return vs;
+            tmp.push(vs);
           }
         }
       }
+
+      tmp.sort((a, b) => {
+        return this.getPresenterPriority(b) - this.getPresenterPriority(a);
+      });
+      
+      if (tmp.length) {
+        return tmp[0]
+      }
+
       return null;
     },
   },
