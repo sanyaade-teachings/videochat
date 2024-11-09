@@ -209,14 +209,13 @@ export default {
             return 0
       }
     },
-    // TODO пропадает воспроизведение, если изначально не было и добавить presenter
     // TODO сделать подпись (логин, микрофон) в presenter
     // TODO наладить работу настройки "presenter" вообще, также чтобы она работала без перезахода в звонок
     // TODO если пользак кликнул по элементу UserVideo, то его выбирать
     // TODO сохранять позиции SplitPane
-    // TODO also in presenter mode сделать в меньшем разрешении видео элементы справа
+    // TODO also in presenter mode сделать меньшее разрешение для миниатюр (видео элементы) справа
     // TODO think how to reuse the presenter mode with egress
-    // TODO подумать, где сделать кнопку (только для админа чата) "замьютить всех кроме меня"
+    // TODO подумать, где сделать кнопку (только для админа чата) "замьютить всех кроме меня" - на пульте
     // TODO выбрать side + presenter по дефолту на десктопе, НО НЕ на мобилке
     detachPresenter() {
       this.presenterVideoPublication.videoTrack?.detach(this.$refs.presenterRef);
