@@ -645,19 +645,21 @@ export default {
       const screenHeight = document.body.getBoundingClientRect().height;
       const videoCount = document.getElementsByTagName("video").length;
 
-      const rectWidth = 16;
-      const rectHeight = 9;
-      const r = largestRect(
-          screenWidth,
-          screenHeight,
-          videoCount,
-          rectWidth,
-          rectHeight
-      );
+      if (screenWidth && screenHeight && videoCount) {
+        const rectWidth = 16;
+        const rectHeight = 9;
+        const r = largestRect(
+            screenWidth,
+            screenHeight,
+            videoCount,
+            rectWidth,
+            rectHeight
+        );
 
-      gallery.style.setProperty("--width", r.width + "px");
-      gallery.style.setProperty("--height", r.height + "px");
-      gallery.style.setProperty("--cols", r.cols + "");
+        gallery.style.setProperty("--width", r.width + "px");
+        gallery.style.setProperty("--height", r.height + "px");
+        gallery.style.setProperty("--cols", r.cols + "");
+      }
     },
   },
   computed: {
