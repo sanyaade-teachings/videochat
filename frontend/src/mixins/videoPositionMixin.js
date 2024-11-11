@@ -1,23 +1,22 @@
-import {getStoredPresenter, getStoredVideoPosition, VIDEO_POSITION_AUTO, VIDEO_POSITION_TOP} from "@/store/localStore";
+import {getStoredPresenter, getStoredVideoPosition, VIDEO_POSITION_AUTO, VIDEO_POSITION_HORIZONTAL} from "@/store/localStore";
 import {videochat_name} from "@/router/routes";
 
 export default () => {
     return {
         methods: {
-            videoIsOnTopPlain(value) {
+            videoIsHorizontalPlain(value) {
                 if (value == VIDEO_POSITION_AUTO) {
                     return true // both mobile and desktop
                 } else {
-                    return value == VIDEO_POSITION_TOP;
+                    return value == VIDEO_POSITION_HORIZONTAL;
                 }
             },
-            videoIsOnTop() {
+            videoIsHorizontal() {
               const stored = this.chatStore.videoPosition;
-              return this.videoIsOnTopPlain(stored);
+              return this.videoIsHorizontalPlain(stored);
             },
-
-            videoIsAtSide() {
-              return !this.videoIsOnTop();
+            videoIsVertical() {
+              return !this.videoIsHorizontal();
             },
 
             isVideoRoute() {

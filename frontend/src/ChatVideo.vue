@@ -1,12 +1,12 @@
 <template>
-      <splitpanes :dbl-click-splitter="false" :horizontal="videoIsOnTop()">
+      <splitpanes :dbl-click-splitter="false" :horizontal="videoIsHorizontal()">
           <pane size="80" v-if="chatStore.presenterEnabled">
               <div class="video-presenter-container-element">
                   <video class="video-presenter-element" ref="presenterRef"/>
               </div>
           </pane>
           <pane>
-              <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsOnTop() ? 'video-container-position-top' : 'video-container-position-side'"></v-col>
+              <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsHorizontal() ? 'video-container-position-top' : 'video-container-position-side'"></v-col>
           </pane>
       </splitpanes>
 </template>
@@ -81,8 +81,8 @@ export default {
       return uuidv4();
     },
 
-    setContainerClass(containerEl, videoIsOnTop) {
-      if (videoIsOnTop) { // see also watch chatStore.videoPosition
+    setContainerClass(containerEl, videoIsHorizontal) {
+      if (videoIsHorizontal) { // see also watch chatStore.videoPosition
         containerEl.className = classVideoComponentWrapperPositionTop;
       } else {
         containerEl.className = classVideoComponentWrapperPositionSide;
@@ -101,7 +101,7 @@ export default {
       app.use(pinia);
       const containerEl = document.createElement("div");
 
-      this.setContainerClass(containerEl, this.videoIsOnTop());
+      this.setContainerClass(containerEl, this.videoIsHorizontal());
 
       if (position == first) {
         this.insertChildAtIndex(this.videoContainerDiv, containerEl, 0);
@@ -645,9 +645,9 @@ export default {
     'chatStore.videoPosition': {
       handler: function (newValue, oldValue) {
         if (this.videoContainerDiv) {
-          const videoIsOnTop = this.videoIsOnTopPlain(newValue);
+          const videoIsHorizontal = this.videoIsHorizontalPlain(newValue);
           for (const containerEl of this.videoContainerDiv.children) {
-            this.setContainerClass(containerEl, videoIsOnTop);
+            this.setContainerClass(containerEl, videoIsHorizontal);
           }
         }
       }
@@ -672,11 +672,6 @@ export default {
     this.chatStore.setCallStateInCall();
 
     this.chatStore.initializingVideoCall = true;
-
-    if (!this.isMobile() && this.videoIsAtSide()) {
-      this.chatStore.showDrawerPrevious = this.chatStore.showDrawer;
-      this.chatStore.showDrawer = this.shouldShowChatList();
-    }
 
     // creates the userCallState and assigns sessionId (as part of primary key)
     // and puts this tokenId to metadata
@@ -719,10 +714,6 @@ export default {
     });
 
     this.chatStore.canShowMicrophoneButton = false;
-
-    if (!this.isMobile() && this.videoIsAtSide()) {
-      this.chatStore.showDrawer = this.chatStore.showDrawerPrevious;
-    }
 
     this.chatStore.videoChatUsersCount = 0;
     this.chatStore.showRecordStartButton = false;

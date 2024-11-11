@@ -158,8 +158,8 @@
       setStoredRoomDynacast,
       setStoredRoomAdaptiveStream,
       VIDEO_POSITION_AUTO,
-      VIDEO_POSITION_TOP,
-      VIDEO_POSITION_SIDE,
+      VIDEO_POSITION_HORIZONTAL,
+      VIDEO_POSITION_VERTICAL,
       setStoredVideoPosition,
       getStoredVideoPosition,
       setStoredCodec,
@@ -288,7 +288,7 @@
                 return [NULL_CODEC, 'vp8', 'h264', 'vp9', 'av1']
             },
             positionItems() {
-                return [VIDEO_POSITION_AUTO, VIDEO_POSITION_TOP, VIDEO_POSITION_SIDE]
+                return [VIDEO_POSITION_AUTO, VIDEO_POSITION_HORIZONTAL, VIDEO_POSITION_VERTICAL]
             },
             chatId() {
                 return this.$route.params.id

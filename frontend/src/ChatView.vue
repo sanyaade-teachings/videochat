@@ -609,7 +609,7 @@ export default {
       bus.emit(OPEN_EDIT_MESSAGE, {dto: null, actionType: new_message});
     },
     shouldShowVideoOnTop() {
-        return this.videoIsOnTop() && this.isAllowedVideo()
+        return this.videoIsHorizontal() && this.isAllowedVideo()
     },
     messageListPaneClass() {
       const classes = [];
@@ -625,7 +625,7 @@ export default {
       return this.shouldShowChatList()
     },
     showRightPane() {
-      return this.videoIsAtSide() && this.isAllowedVideo();
+      return this.videoIsVertical() && this.isAllowedVideo();
     },
     showTopPane() {
       return this.shouldShowVideoOnTop();
