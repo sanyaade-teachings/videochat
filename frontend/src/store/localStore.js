@@ -174,12 +174,13 @@ export const removeStoredChatEditMessageDto = (chatId) => {
 export const VIDEO_POSITION_AUTO = 'auto';
 export const VIDEO_POSITION_HORIZONTAL = 'horizontal'; // as usual
 export const VIDEO_POSITION_VERTICAL = 'vertical'; // new
+export const VIDEO_POSITION_GALLERY = 'gallery';
 
 export const KEY_VIDEO_POSITION = 'videoPosition';
 
 export const getStoredVideoPosition = () => {
     let v = JSON.parse(localStorage.getItem(KEY_VIDEO_POSITION));
-    if (v === null || (v !== VIDEO_POSITION_AUTO && v !== VIDEO_POSITION_HORIZONTAL && v !== VIDEO_POSITION_VERTICAL)) {
+    if (v === null || (v !== VIDEO_POSITION_AUTO && v !== VIDEO_POSITION_HORIZONTAL && v !== VIDEO_POSITION_VERTICAL && v !== VIDEO_POSITION_GALLERY)) {
         console.log("Resetting videoPosition to default", VIDEO_POSITION_AUTO);
         setStoredVideoPosition(VIDEO_POSITION_AUTO);
         v = JSON.parse(localStorage.getItem(KEY_VIDEO_POSITION));

@@ -208,16 +208,16 @@ export default {
         },
         videoContainerElementClass() {
           const ret = ['video-container-element'];
-          if (this.videoIsHorizontal()) {
-            ret.push('video-container-element-position-top');
+          if (this.videoIsHorizontal() || this.videoIsGallery()) {
+            ret.push('video-container-element-position-horizontal');
           } else {
-            ret.push('video-container-element-position-side');
+            ret.push('video-container-element-position-vertical');
           }
           return ret;
         },
         videoElementClass() {
           const ret = ['video-element'];
-          if (this.videoIsHorizontal()) {
+          if (this.videoIsHorizontal() || this.videoIsGallery()) {
             ret.push('video-element-horizontal');
           } else {
             ret.push('video-element-vertical');
@@ -242,14 +242,12 @@ export default {
         //box-sizing: content-box
     }
 
-    .video-container-element-position-top {
+    .video-container-element-position-horizontal {
         height 100%
     }
 
-    .video-container-element-position-side {
+    .video-container-element-position-vertical {
         width 100%
-        margin-top auto
-        margin-bottom auto
     }
 
     .video-container-element:nth-child(even) {

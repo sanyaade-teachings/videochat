@@ -101,7 +101,7 @@ export default {
       app.use(pinia);
       const containerEl = document.createElement("div");
 
-      this.setContainerClass(containerEl, this.videoIsHorizontal());
+      this.setContainerClass(containerEl, this.videoIsHorizontal() || this.videoIsGallery());
 
       if (position == first) {
         this.insertChildAtIndex(this.videoContainerDiv, containerEl, 0);
@@ -636,10 +636,10 @@ export default {
   computed: {
     ...mapStores(useChatStore),
     splitpanesIsHorizontal() {
-      return this.videoIsHorizontal()
+      return this.videoIsHorizontal() || this.videoIsGallery()
     },
     videoContainerClass() {
-      return this.videoIsHorizontal() ? 'video-container-position-horizontal' : 'video-container-position-vertical'
+      return this.videoIsHorizontal() || this.videoIsGallery() ? 'video-container-position-horizontal' : 'video-container-position-vertical'
     },
   },
   components: {

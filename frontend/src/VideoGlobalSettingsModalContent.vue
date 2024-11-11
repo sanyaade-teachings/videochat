@@ -165,7 +165,11 @@
       setStoredCodec,
       NULL_CODEC,
       NULL_SCREEN_RESOLUTION,
-      setStoredCallVideoDeviceId, setStoredCallAudioDeviceId, getStoredPresenter, setStoredPresenter
+      setStoredCallVideoDeviceId,
+      setStoredCallAudioDeviceId,
+      getStoredPresenter,
+      setStoredPresenter,
+      VIDEO_POSITION_GALLERY
     } from "./store/localStore";
     import {videochat_name} from "./router/routes";
     import videoServerSettingsMixin from "@/mixins/videoServerSettingsMixin";
@@ -288,7 +292,7 @@
                 return [NULL_CODEC, 'vp8', 'h264', 'vp9', 'av1']
             },
             positionItems() {
-                return [VIDEO_POSITION_AUTO, VIDEO_POSITION_HORIZONTAL, VIDEO_POSITION_VERTICAL]
+                return [VIDEO_POSITION_AUTO, VIDEO_POSITION_HORIZONTAL, VIDEO_POSITION_VERTICAL, VIDEO_POSITION_GALLERY]
             },
             chatId() {
                 return this.$route.params.id
