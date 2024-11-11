@@ -1,12 +1,12 @@
 <template>
-      <splitpanes :dbl-click-splitter="false" :horizontal="videoIsHorizontal()">
+      <splitpanes :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal">
           <pane size="80" v-if="chatStore.presenterEnabled">
               <div class="video-presenter-container-element">
                   <video class="video-presenter-element" ref="presenterRef"/>
               </div>
           </pane>
           <pane>
-              <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsHorizontal() ? 'video-container-position-horizontal' : 'video-container-position-vertical'"></v-col>
+              <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"></v-col>
           </pane>
       </splitpanes>
 </template>
@@ -636,6 +636,12 @@ export default {
   },
   computed: {
     ...mapStores(useChatStore),
+    splitpanesIsHorizontal() {
+      return this.videoIsHorizontal()
+    },
+    videoContainerClass() {
+      return this.videoIsHorizontal() ? 'video-container-position-horizontal' : 'video-container-position-vertical'
+    },
   },
   components: {
       Splitpanes,
