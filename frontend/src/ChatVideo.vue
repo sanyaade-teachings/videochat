@@ -6,7 +6,7 @@
               </div>
           </pane>
           <pane>
-              <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsHorizontal() ? 'video-container-position-top' : 'video-container-position-side'"></v-col>
+              <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoIsHorizontal() ? 'video-container-position-horizontal' : 'video-container-position-vertical'"></v-col>
           </pane>
       </splitpanes>
 </template>
@@ -745,14 +745,14 @@ export default {
   //box-sizing: border-box
 }
 
-.video-container-position-top {
+.video-container-position-horizontal {
   flex-direction: row;
   overflow-x: scroll;
   overflow-y: hidden;
   scrollbar-width: none;
 }
 
-.video-container-position-side {
+.video-container-position-vertical {
   overflow-y: scroll;
   scrollbar-width: auto;
   background black

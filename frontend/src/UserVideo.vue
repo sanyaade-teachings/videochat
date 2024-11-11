@@ -9,8 +9,8 @@
             <v-btn variant="plain" icon v-if="!isLocal && canAudioMute" @click="forceMuteRemote()" :title="$vuetify.locale.t('$vuetify.force_mute')"><v-icon size="x-large" class="video-container-element-control-item">mdi-microphone-off</v-icon></v-btn>
         </div>
         <span v-if="!isLocal && avatarIsSet" class="video-container-element-hint">{{ $vuetify.locale.t('$vuetify.video_is_not_shown') }}</span>
-        <img v-show="avatarIsSet && videoMute" @click="showControls=!showControls" class="video-element" :class="videoIsHorizontal() ? 'video-element-top' : 'video-element-side'" :src="avatar"/>
-        <video v-show="!videoMute || !avatarIsSet" @click="showControls=!showControls" class="video-element" :class="videoIsHorizontal() ? 'video-element-top' : 'video-element-side'" :id="id" autoPlay playsInline ref="videoRef"/>
+        <img v-show="avatarIsSet && videoMute" @click="showControls=!showControls" class="video-element" :class="videoIsHorizontal() ? 'video-element-horizontal' : 'video-element-vertical'" :src="avatar"/>
+        <video v-show="!videoMute || !avatarIsSet" @click="showControls=!showControls" class="video-element" :class="videoIsHorizontal() ? 'video-element-horizontal' : 'video-element-vertical'" :id="id" autoPlay playsInline ref="videoRef"/>
         <p v-bind:class="[speaking ? 'video-container-element-caption-speaking' : '', errored ? 'video-container-element-caption-errored' : '', 'video-container-element-caption']">{{ userName }} <v-icon v-if="audioMute">mdi-microphone-off</v-icon></p>
     </div>
 </template>
@@ -251,7 +251,7 @@ export default {
         z-index 2
     }
 
-    .video-element-side {
+    .video-element-vertical {
         width: 100% !important
     }
 
