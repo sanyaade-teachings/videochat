@@ -208,8 +208,10 @@ export default {
         },
         videoContainerElementClass() {
           const ret = ['video-container-element'];
-          if (this.videoIsHorizontal() || this.videoIsGallery()) {
+          if (this.videoIsHorizontal()) {
             ret.push('video-container-element-position-horizontal');
+          } else if (this.videoIsGallery()) {
+            ret.push('video-container-element-position-gallery');
           } else {
             ret.push('video-container-element-position-vertical');
           }
@@ -217,8 +219,10 @@ export default {
         },
         videoElementClass() {
           const ret = ['video-element'];
-          if (this.videoIsHorizontal() || this.videoIsGallery()) {
+          if (this.videoIsHorizontal()) {
             ret.push('video-element-horizontal');
+          } else if (this.videoIsGallery()) {
+            ret.push('video-element-gallery');
           } else {
             ret.push('video-element-vertical');
           }
@@ -250,6 +254,12 @@ export default {
         width 100%
     }
 
+    .video-container-element-position-gallery {
+        width: var(--width);
+        height: var(--height);
+        background-color: #3a3a3e;
+    }
+
     .video-container-element:nth-child(even) {
         background #d5fdd5;
     }
@@ -261,14 +271,24 @@ export default {
     .video-element {
         // object-fit: contain;
         //box-sizing: border-box;
-        height: 100% !important
-        min-width: 100% !important
         object-fit: cover;
         z-index 2
     }
 
+    .video-element-horizontal {
+      height: 100% !important
+      min-width: 100% !important
+    }
+
     .video-element-vertical {
-        width: 100% !important
+      height: 100% !important
+      min-width: 100% !important
+      width: 100% !important
+    }
+
+    .video-element-gallery {
+      height: 100%;
+      width: 100%;
     }
 
     .video-container-element-control {

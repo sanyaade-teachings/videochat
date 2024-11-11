@@ -1,6 +1,6 @@
 <template>
       <splitpanes :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal">
-          <pane size="80" v-if="chatStore.presenterEnabled">
+          <pane size="80" v-if="shouldShowPresenter">
               <div class="video-presenter-container-element">
                   <video class="video-presenter-element" ref="presenterRef"/>
               </div>
@@ -31,7 +31,7 @@ import {
 } from "@/utils";
 import {
   getStoredAudioDevicePresents, getStoredCallAudioDeviceId, getStoredCallVideoDeviceId,
-  getStoredVideoDevicePresents, getStoredVideoPosition,
+  getStoredVideoDevicePresents,
   NULL_CODEC,
   NULL_SCREEN_RESOLUTION,
   setStoredCallAudioDeviceId,
@@ -52,13 +52,15 @@ import {goToPreservingQuery} from "@/mixins/searchString";
 import pinia from "@/store/index";
 import videoPositionMixin from "@/mixins/videoPositionMixin";
 import { Splitpanes, Pane } from 'splitpanes';
+import {largestRect} from "rect-scaler";
+import debounce from "lodash/debounce";
 
 const first = 'first';
 const second = 'second';
 const last = 'last';
 
-const classVideoComponentWrapperPositionTop = 'video-component-wrapper-position-top';
-const classVideoComponentWrapperPositionSide = 'video-component-wrapper-position-side';
+const classVideoComponentWrapperPositionHorizontal = 'video-component-wrapper-position-horizontal';
+const classVideoComponentWrapperPositionVertical = 'video-component-wrapper-position-vertical';
 
 export default {
   mixins: [
@@ -83,9 +85,9 @@ export default {
 
     setUserVideoWrapperClass(containerEl, videoIsHorizontal) {
       if (videoIsHorizontal) { // see also watch chatStore.videoPosition
-        containerEl.className = classVideoComponentWrapperPositionTop;
+        containerEl.className = classVideoComponentWrapperPositionHorizontal;
       } else {
-        containerEl.className = classVideoComponentWrapperPositionSide;
+        containerEl.className = classVideoComponentWrapperPositionVertical;
       }
     },
     createComponent(userIdentity, position, videoTagId, localVideoProperties) {
@@ -163,6 +165,7 @@ export default {
             candidateToAppendVideo.setUserId(md.userId);
 
             this.updatePresenterIfNeed(track);
+            this.recalculateLayout();
 
             return
           } else if (track.kind == 'audio') {
@@ -185,6 +188,9 @@ export default {
             candidateToAppendAudio.setUserName(md.login);
             candidateToAppendAudio.setAvatar(md.avatar);
             candidateToAppendAudio.setUserId(md.userId);
+
+            this.recalculateLayout();
+
             return
           }
         }
@@ -261,6 +267,7 @@ export default {
       this.removeComponent(participant.identity, track);
 
       this.refreshLocalMicrophoneAppBarButtons();
+      this.recalculateLayout();
     },
     electNewPresenterIfNeed() {
       // about second: detachPresenterIfNeed() leaves presenterVideoPublication null
@@ -632,6 +639,26 @@ export default {
 
       return null;
     },
+    recalculateLayout() {
+      const gallery = document.getElementById("video-container");
+      const screenWidth = document.body.getBoundingClientRect().width;
+      const screenHeight = document.body.getBoundingClientRect().height;
+      const videoCount = document.getElementsByTagName("video").length;
+
+      const rectWidth = 16;
+      const rectHeight = 9;
+      const r = largestRect(
+          screenWidth,
+          screenHeight,
+          videoCount,
+          rectWidth,
+          rectHeight
+      );
+
+      gallery.style.setProperty("--width", r.width + "px");
+      gallery.style.setProperty("--height", r.height + "px");
+      gallery.style.setProperty("--cols", r.cols + "");
+    },
   },
   computed: {
     ...mapStores(useChatStore),
@@ -639,7 +666,16 @@ export default {
       return this.videoIsHorizontal() || this.videoIsGallery()
     },
     videoContainerClass() {
-      return this.videoIsHorizontal() || this.videoIsGallery() ? 'video-container-position-horizontal' : 'video-container-position-vertical'
+      if (this.videoIsHorizontal()) {
+        return 'video-container-position-horizontal'
+      } else if (this.videoIsGallery()) {
+        return 'video-container-position-gallery'
+      } else {
+        return 'video-container-position-vertical'
+      }
+    },
+    shouldShowPresenter() {
+      return this.chatStore.presenterEnabled && !this.videoIsGallery()
     },
   },
   components: {
@@ -651,8 +687,9 @@ export default {
       handler: function (newValue, oldValue) {
         if (this.videoContainerDiv) {
           const videoIsHorizontal = this.videoIsHorizontalPlain(newValue);
+          const videoIsGallery = this.videoIsGalleryPlain(newValue);
           for (const containerEl of this.videoContainerDiv.children) {
-            this.setUserVideoWrapperClass(containerEl, videoIsHorizontal);
+            this.setUserVideoWrapperClass(containerEl, videoIsHorizontal || videoIsGallery);
           }
         }
       }
@@ -670,6 +707,9 @@ export default {
         }
       }
     }
+  },
+  created() {
+    this.recalculateLayout = debounce(this.recalculateLayout);
   },
   async mounted() {
     this.initPositionAndPresenter();
@@ -698,6 +738,8 @@ export default {
     bus.on(REQUEST_CHANGE_VIDEO_PARAMETERS, this.tryRestartVideoDevice);
     bus.on(SET_LOCAL_MICROPHONE_MUTED, this.onLocalMicrophoneMutedByAppBarButton);
     bus.on(CHANGE_VIDEO_SOURCE, this.onChangeVideoSource);
+
+    window.addEventListener("resize", this.recalculateLayout);
 
     this.videoContainerDiv = document.getElementById("video-container");
 
@@ -729,6 +771,8 @@ export default {
 
     this.chatStore.setCallStateReady();
 
+    window.removeEventListener("resize", this.recalculateLayout);
+
     bus.off(ADD_VIDEO_SOURCE, this.onAddVideoSource);
     bus.off(ADD_SCREEN_SOURCE, this.onAddScreenSource);
     bus.off(REQUEST_CHANGE_VIDEO_PARAMETERS, this.tryRestartVideoDevice);
@@ -744,22 +788,34 @@ export default {
   display: flex;
   //scroll-snap-align width
   //scroll-padding 0
-  height 100%
-  width 100%
   //object-fit: contain;
   //box-sizing: border-box
 }
 
 .video-container-position-horizontal {
+  height 100%
+  width 100%
   flex-direction: row;
   overflow-x: auto;
   // scrollbar-width: none;
 }
 
 .video-container-position-vertical {
+  height 100%
+  width 100%
   overflow-y: auto;
   background black
   flex-direction: column;
+}
+
+.video-container-position-gallery {
+  align-items: center;
+  justify-content: center;
+
+  display: flex
+  contain: paint // https://youtu.be/72pUm4tQesw?t=557
+  flex-wrap: wrap
+  max-width: calc(var(--width) * var(--cols))
 }
 
 
@@ -786,7 +842,7 @@ export default {
 </style>
 
 <style lang="stylus">
-.video-component-wrapper-position-top {
+.video-component-wrapper-position-horizontal {
   display contents
 }
 

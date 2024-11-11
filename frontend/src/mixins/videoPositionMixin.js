@@ -24,8 +24,12 @@ export default () => {
             videoIsVertical() {
                 return this.chatStore.videoPosition === VIDEO_POSITION_VERTICAL;
             },
+            videoIsGalleryPlain(value) {
+                return value === VIDEO_POSITION_GALLERY;
+            },
             videoIsGallery() {
-                return this.chatStore.videoPosition === VIDEO_POSITION_GALLERY;
+                const stored = this.chatStore.videoPosition;
+                return this.videoIsGalleryPlain(stored);
             },
 
             isVideoRoute() {
