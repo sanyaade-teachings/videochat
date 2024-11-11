@@ -222,6 +222,7 @@ export default {
     // TODO think how to reuse the presenter mode with egress
     // TODO подумать, где сделать кнопку (только для админа чата) "замьютить всех кроме меня" - на пульте
     // TODO выбрать side + presenter по дефолту на десктопе, НО НЕ на мобилке
+    // TODO fix height of "Scroll down" FAB
     detachPresenter() {
       this.presenterVideoPublication.videoTrack?.detach(this.$refs.presenterRef);
       this.presenterVideoPublication = null;
