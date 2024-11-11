@@ -752,14 +752,12 @@ export default {
 
 .video-container-position-horizontal {
   flex-direction: row;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  scrollbar-width: none;
+  overflow-x: auto;
+  // scrollbar-width: none;
 }
 
 .video-container-position-vertical {
-  overflow-y: scroll;
-  scrollbar-width: auto;
+  overflow-y: auto;
   background black
   flex-direction: column;
 }
