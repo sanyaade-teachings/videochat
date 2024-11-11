@@ -81,7 +81,7 @@ export default {
       return uuidv4();
     },
 
-    setContainerClass(containerEl, videoIsHorizontal) {
+    setUserVideoWrapperClass(containerEl, videoIsHorizontal) {
       if (videoIsHorizontal) { // see also watch chatStore.videoPosition
         containerEl.className = classVideoComponentWrapperPositionTop;
       } else {
@@ -101,7 +101,7 @@ export default {
       app.use(pinia);
       const containerEl = document.createElement("div");
 
-      this.setContainerClass(containerEl, this.videoIsHorizontal() || this.videoIsGallery());
+      this.setUserVideoWrapperClass(containerEl, this.videoIsHorizontal() || this.videoIsGallery());
 
       if (position == first) {
         this.insertChildAtIndex(this.videoContainerDiv, containerEl, 0);
@@ -652,7 +652,7 @@ export default {
         if (this.videoContainerDiv) {
           const videoIsHorizontal = this.videoIsHorizontalPlain(newValue);
           for (const containerEl of this.videoContainerDiv.children) {
-            this.setContainerClass(containerEl, videoIsHorizontal);
+            this.setUserVideoWrapperClass(containerEl, videoIsHorizontal);
           }
         }
       }
