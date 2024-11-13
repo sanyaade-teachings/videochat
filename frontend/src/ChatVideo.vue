@@ -699,6 +699,11 @@ export default {
           for (const containerEl of this.videoContainerDiv.children) {
             this.setUserVideoWrapperClass(containerEl, videoIsHorizontal, videoIsGallery);
           }
+          if (videoIsGallery) {
+            setTimeout(()=>{
+              this.recalculateLayout();
+            }, 300)
+          }
         }
       }
     },
@@ -713,6 +718,13 @@ export default {
             this.detachPresenter();
           }
         }
+      }
+    },
+    'chatStore.showDrawer': {
+      handler: function (newValue, oldValue) {
+        setTimeout(()=>{
+          this.recalculateLayout();
+        }, 300)
       }
     }
   },
