@@ -61,6 +61,7 @@ const last = 'last';
 
 const classVideoComponentWrapperPositionHorizontal = 'video-component-wrapper-position-horizontal';
 const classVideoComponentWrapperPositionVertical = 'video-component-wrapper-position-vertical';
+const classVideoComponentWrapperPositionGallery = 'video-component-wrapper-position-gallery';
 
 export default {
   mixins: [
@@ -83,9 +84,11 @@ export default {
       return uuidv4();
     },
 
-    setUserVideoWrapperClass(containerEl, videoIsHorizontal) {
+    setUserVideoWrapperClass(containerEl, videoIsHorizontal, videoIsGallery) {
       if (videoIsHorizontal) { // see also watch chatStore.videoPosition
         containerEl.className = classVideoComponentWrapperPositionHorizontal;
+      } else if (videoIsGallery) {
+        containerEl.className = classVideoComponentWrapperPositionGallery;
       } else {
         containerEl.className = classVideoComponentWrapperPositionVertical;
       }
@@ -103,7 +106,7 @@ export default {
       app.use(pinia);
       const containerEl = document.createElement("div");
 
-      this.setUserVideoWrapperClass(containerEl, this.videoIsHorizontal() || this.videoIsGallery());
+      this.setUserVideoWrapperClass(containerEl, this.videoIsHorizontal(), this.videoIsGallery());
 
       if (position == first) {
         this.insertChildAtIndex(this.videoContainerDiv, containerEl, 0);
@@ -692,7 +695,7 @@ export default {
           const videoIsHorizontal = this.videoIsHorizontalPlain(newValue);
           const videoIsGallery = this.videoIsGalleryPlain(newValue);
           for (const containerEl of this.videoContainerDiv.children) {
-            this.setUserVideoWrapperClass(containerEl, videoIsHorizontal || videoIsGallery);
+            this.setUserVideoWrapperClass(containerEl, videoIsHorizontal, videoIsGallery);
           }
         }
       }
