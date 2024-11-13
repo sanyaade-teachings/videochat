@@ -38,7 +38,7 @@
       </pane>
 
       <pane v-if="isAllowedVideo()" size="60">
-        <ChatVideo v-if="chatDtoIsReady" :chatId="chatId" />
+        <ChatVideo v-if="chatDtoIsReady" :chatId="chatId" ref="chatVideoRef" />
       </pane>
 
     </splitpanes>
@@ -733,6 +733,7 @@ export default {
     },
 
     onPanelAdd() {
+      this.$refs.chatVideoRef?.recalculateLayout();
       // console.debug("On panel add", this.$refs.splOuter.panes);
       this.$nextTick(() => {
         // const stored = this.getStored(); // TODO
@@ -742,6 +743,8 @@ export default {
 
     },
     onPanelRemove() {
+      this.$refs.chatVideoRef?.recalculateLayout();
+
       // console.debug("On panel removed", this.$refs.splOuter.panes);
       this.$nextTick(() => {
         // const stored = this.getStored(); // TODO
@@ -750,6 +753,7 @@ export default {
       })
     },
     onPanelResized() {
+      this.$refs.chatVideoRef?.recalculateLayout();
       this.$nextTick(() => {
         // this.saveToStored(this.prepareForStore()); // TODO
       })

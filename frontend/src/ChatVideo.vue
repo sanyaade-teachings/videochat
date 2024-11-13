@@ -645,24 +645,26 @@ export default {
     },
     recalculateLayout() {
       const gallery = document.getElementById("video-container");
-      const screenWidth = document.body.getBoundingClientRect().width;
-      const screenHeight = document.body.getBoundingClientRect().height;
-      const videoCount = document.getElementsByTagName("video").length;
+      if (gallery) {
+        const screenWidth = gallery.getBoundingClientRect().width;
+        const screenHeight = gallery.getBoundingClientRect().height;
+        const videoCount = gallery.getElementsByTagName("video").length;
 
-      if (screenWidth && screenHeight && videoCount) {
-        const rectWidth = 16;
-        const rectHeight = 9;
-        const r = largestRect(
-            screenWidth,
-            screenHeight,
-            videoCount,
-            rectWidth,
-            rectHeight
-        );
+        if (!!screenWidth && !!screenHeight && !!videoCount) {
+          const rectWidth = 16;
+          const rectHeight = 9;
+          const r = largestRect(
+              screenWidth,
+              screenHeight,
+              videoCount,
+              rectWidth,
+              rectHeight
+          );
 
-        gallery.style.setProperty("--width", r.width + "px");
-        gallery.style.setProperty("--height", r.height + "px");
-        gallery.style.setProperty("--cols", r.cols + "");
+          gallery.style.setProperty("--width", r.width + "px");
+          gallery.style.setProperty("--height", r.height + "px");
+          gallery.style.setProperty("--cols", r.cols + "");
+        }
       }
     },
   },
@@ -815,13 +817,17 @@ export default {
 }
 
 .video-container-position-gallery {
+  height: 100%;
+  width: 100%;
+
   align-items: center;
   justify-content: center;
 
   display: flex
   contain: paint // https://youtu.be/72pUm4tQesw?t=557
   flex-wrap: wrap
-  max-width: calc(var(--width) * var(--cols))
+  // max-width: calc(var(--width) * var(--cols))
+  background-color: black;
 }
 
 
