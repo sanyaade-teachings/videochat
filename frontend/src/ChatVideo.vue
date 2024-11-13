@@ -227,8 +227,10 @@ export default {
     // TODO выбрать side + presenter по дефолту на десктопе, НО НЕ на мобилке
     // TODO fix height of "Scroll down" FAB
     detachPresenter() {
-      this.presenterVideoPublication.videoTrack?.detach(this.$refs.presenterRef);
-      this.presenterVideoPublication = null;
+      if (this.canUsePresenter()) {
+        this.presenterVideoPublication.videoTrack?.detach(this.$refs.presenterRef);
+        this.presenterVideoPublication = null;
+      }
     },
     detachPresenterIfNeed() {
       if (this.presenterVideoPublication) {
@@ -236,8 +238,10 @@ export default {
       }
     },
     updatePresenter(stream) {
-      stream?.videoTrack?.attach(this.$refs.presenterRef);
-      this.presenterVideoPublication = stream;
+      if (this.canUsePresenter()) {
+        stream?.videoTrack?.attach(this.$refs.presenterRef);
+        this.presenterVideoPublication = stream;
+      }
     },
     updatePresenterIfNeed(stream, isSpeaking) {
         if (this.chatStore.presenterEnabled) {
@@ -249,7 +253,9 @@ export default {
           }
         }
     },
-
+    canUsePresenter() {
+      return !this.videoIsGallery();
+    },
     handleTrackUnsubscribed(
       track,
       publication,
