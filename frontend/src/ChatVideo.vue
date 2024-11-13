@@ -805,6 +805,7 @@ export default {
   width 100%
   flex-direction: row;
   overflow-x: auto;
+  overflow-y: hidden;
   // scrollbar-width: none;
 }
 
