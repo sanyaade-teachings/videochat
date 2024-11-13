@@ -822,7 +822,7 @@ export default {
 
   align-items: center;
   justify-content: center;
-
+  align-content: baseline;
   overflow-y: auto;
 
   display: flex
