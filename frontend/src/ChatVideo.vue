@@ -826,7 +826,6 @@ export default {
   overflow-y: auto;
 
   display: flex
-  contain: paint // https://youtu.be/72pUm4tQesw?t=557
   flex-wrap: wrap
   // max-width: calc(var(--width) * var(--cols))
   background-color: black;
