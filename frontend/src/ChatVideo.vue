@@ -253,8 +253,12 @@ export default {
           }
         }
     },
+    canUsePresenterPlain(v) {
+      return !this.videoIsGalleryPlain(v);
+    },
     canUsePresenter() {
-      return !this.videoIsGallery();
+      const v = this.chatStore.videoPosition;
+      return this.canUsePresenterPlain(v);
     },
     handleTrackUnsubscribed(
       track,
@@ -705,6 +709,11 @@ export default {
           for (const containerEl of this.videoContainerDiv.children) {
             this.setUserVideoWrapperClass(containerEl, videoIsHorizontal, videoIsGallery);
           }
+          if (this.canUsePresenterPlain(newValue)) {
+            this.$nextTick(() => {
+              this.electNewPresenter();
+            })
+          }
           if (videoIsGallery) {
             setTimeout(()=>{
               this.recalculateLayout();
@@ -825,6 +834,7 @@ export default {
   overflow-x: auto;
   overflow-y: hidden;
   // scrollbar-width: none;
+  background black
 }
 
 .video-container-position-vertical {
