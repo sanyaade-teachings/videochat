@@ -823,6 +823,8 @@ export default {
   align-items: center;
   justify-content: center;
 
+  overflow-y: auto;
+
   display: flex
   contain: paint // https://youtu.be/72pUm4tQesw?t=557
   flex-wrap: wrap
