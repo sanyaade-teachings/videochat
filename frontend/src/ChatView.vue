@@ -4,9 +4,9 @@
         <ChatList :embedded="true" v-if="isAllowedChatList()" ref="chatListRef"/>
       </pane>
 
-      <pane style="background: white" :class="messageListPaneClass()">
+      <pane style="background: white">
         <splitpanes class="default-theme" :dbl-click-splitter="false" horizontal>
-          <pane>
+          <pane :class="messageListPaneClass()">
             <v-tooltip
                 v-if="broadcastMessage"
                 :model-value="showTooltip"
@@ -712,7 +712,6 @@ export default {
       }
       this.setMiddlePane(ret);
     },
-    // TODO fix pinned message look on mobile
     setMiddlePane(ret) {
       // let middleSize = 100; // percents // TODO
       // let middlePaneIndex = 0;
