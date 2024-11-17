@@ -221,7 +221,6 @@ export default {
     // TODO сделать подпись (логин, микрофон) в presenter
     // TODO если пользак кликнул по элементу UserVideo, то его выбирать (override в Presenter)
     // TODO восстановить сохранение позиций SplitPane в ChatView + в ChatVideo
-    // TODO also in presenter mode сделать меньшее разрешение для миниатюр (видео элементы) справа
     // TODO think how to reuse the presenter mode with egress
     // TODO подумать, где сделать кнопку (только для админа чата) "замьютить всех кроме меня" - на пульте
     // TODO выбрать side + presenter по дефолту на десктопе, НО НЕ на мобилке
