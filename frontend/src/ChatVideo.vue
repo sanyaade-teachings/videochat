@@ -3,8 +3,8 @@
           <pane size="80" v-if="shouldShowPresenter">
               <div class="video-presenter-container-element">
                   <video class="video-presenter-element" ref="presenterRef"/>
+                  <div class="video-buttons"></div>
               </div>
-              <div class="video-buttons"></div>
           </pane>
           <pane>
               <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"></v-col>
@@ -882,11 +882,11 @@ export default {
 .video-buttons {
     height: 100px;
     width: 400px;
-    position: relative;
+    position: absolute;
     background: #f00;
-    bottom 110px
-    margin-left auto
-    margin-right auto
+    bottom 10px
+    //margin-left auto
+    //margin-right auto
 }
 </style>
 
