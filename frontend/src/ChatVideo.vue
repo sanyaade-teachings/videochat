@@ -882,6 +882,7 @@ export default {
 </style>
 
 <style lang="stylus">
+// applied from js, so it shouldn't be changed, so without scoped
 .video-component-wrapper-position-horizontal {
   display contents
 }
