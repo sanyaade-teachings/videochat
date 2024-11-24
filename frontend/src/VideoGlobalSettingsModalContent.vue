@@ -42,6 +42,7 @@
                     <v-row no-gutters class="my-4">
                         <v-col>
                             <v-checkbox
+                                :disabled="!isPresenterEnabled()"
                                 density="comfortable"
                                 color="primary"
                                 hide-details
@@ -161,13 +162,11 @@
       VIDEO_POSITION_HORIZONTAL,
       VIDEO_POSITION_VERTICAL,
       setStoredVideoPosition,
-      getStoredVideoPosition,
       setStoredCodec,
       NULL_CODEC,
       NULL_SCREEN_RESOLUTION,
       setStoredCallVideoDeviceId,
       setStoredCallAudioDeviceId,
-      getStoredPresenter,
       setStoredPresenter,
       VIDEO_POSITION_GALLERY
     } from "./store/localStore";

@@ -31,7 +31,9 @@ export default () => {
                 const stored = this.chatStore.videoPosition;
                 return this.videoIsGalleryPlain(stored);
             },
-
+            isPresenterEnabled() {
+                return this.videoIsHorizontal() || this.videoIsVertical()
+            },
             isVideoRoute() {
               return this.$route.name == videochat_name
             },
