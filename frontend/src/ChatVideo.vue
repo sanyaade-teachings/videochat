@@ -4,6 +4,7 @@
               <div class="video-presenter-container-element">
                   <video class="video-presenter-element" ref="presenterRef"/>
               </div>
+              <div class="video-buttons"></div>
           </pane>
           <pane>
               <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"></v-col>
@@ -878,7 +879,15 @@ export default {
     background black
 }
 
-
+.video-buttons {
+    height: 100px;
+    width: 400px;
+    position: relative;
+    background: #f00;
+    bottom 110px
+    margin-left auto
+    margin-right auto
+}
 </style>
 
 <style lang="stylus">
