@@ -6,8 +6,9 @@
                   <div class="video-buttons"></div>
               </div>
           </pane>
-          <pane>
+          <pane class="pane-videos">
               <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"></v-col>
+              <div v-if="!shouldShowPresenter" class="video-buttons"></div>
           </pane>
       </splitpanes>
 </template>
@@ -885,9 +886,15 @@ export default {
     position: absolute;
     background: #f00;
     bottom 10px
-    //margin-left auto
-    //margin-right auto
+    z-index 20
 }
+
+// need to center the nested video puttons
+.pane-videos {
+  display: flex;
+  justify-content: center;
+}
+
 </style>
 
 <style lang="stylus">
