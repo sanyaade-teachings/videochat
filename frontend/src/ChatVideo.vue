@@ -3,12 +3,12 @@
           <pane size="80" v-if="shouldShowPresenter">
               <div class="video-presenter-container-element">
                   <video class="video-presenter-element" ref="presenterRef"/>
-                  <div class="video-buttons"></div>
+                  <div class="video-buttons-control"></div>
               </div>
           </pane>
           <pane class="pane-videos">
               <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"></v-col>
-              <div v-if="!shouldShowPresenter" class="video-buttons"></div>
+              <div v-if="!shouldShowPresenter" class="video-buttons-control"></div>
           </pane>
       </splitpanes>
 </template>
@@ -890,7 +890,7 @@ export default {
     background black
 }
 
-.video-buttons {
+.video-buttons-control {
     height: 100px;
     width: 400px;
     position: absolute;
