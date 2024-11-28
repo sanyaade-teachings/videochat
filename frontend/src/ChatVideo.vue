@@ -753,6 +753,11 @@ export default {
 
     this.chatStore.initializingVideoCall = true;
 
+    if (!this.isMobile()) {
+      this.chatStore.showDrawerPrevious = this.chatStore.showDrawer;
+      this.chatStore.showDrawer = false;
+    }
+
     // creates the userCallState and assigns sessionId (as part of primary key)
     // and puts this tokenId to metadata
     const enterResponse = await axios.put(`/api/video/${this.chatId}/dial/enter`, null, {
@@ -796,6 +801,11 @@ export default {
     });
 
     this.chatStore.canShowMicrophoneButton = false;
+
+    if (!this.isMobile()) {
+      this.chatStore.showDrawer = this.chatStore.showDrawerPrevious;
+      this.chatStore.showDrawerPrevious = false;
+    }
 
     this.chatStore.videoChatUsersCount = 0;
     this.chatStore.showRecordStartButton = false;
