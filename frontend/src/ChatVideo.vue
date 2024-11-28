@@ -3,12 +3,12 @@
           <pane size="80" v-if="shouldShowPresenter">
               <div class="video-presenter-container-element">
                   <video class="video-presenter-element" ref="presenterRef"/>
-                  <div class="video-buttons-control"></div>
+                  <VideoButtons/>
               </div>
           </pane>
           <pane class="pane-videos">
               <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"></v-col>
-              <div v-if="!shouldShowPresenter" class="video-buttons-control"></div>
+              <VideoButtons v-if="!shouldShowPresenter"/>
           </pane>
       </splitpanes>
 </template>
@@ -56,6 +56,7 @@ import videoPositionMixin from "@/mixins/videoPositionMixin";
 import { Splitpanes, Pane } from 'splitpanes';
 import {largestRect} from "rect-scaler";
 import debounce from "lodash/debounce";
+import VideoButtons from "./VideoButtons.vue"
 
 const first = 'first';
 const second = 'second';
@@ -699,6 +700,7 @@ export default {
   components: {
       Splitpanes,
       Pane,
+      VideoButtons,
   },
   watch: {
     'chatStore.videoPosition': {
@@ -888,15 +890,6 @@ export default {
     height: 100% !important
     object-fit: contain;
     background black
-}
-
-.video-buttons-control {
-    height: 100px;
-    width: 400px;
-    position: absolute;
-    background: #f00;
-    bottom 10px
-    z-index 20
 }
 
 // need to center the nested video puttons
