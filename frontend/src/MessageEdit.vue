@@ -198,7 +198,7 @@
         link_dialog_type_add_link_to_text,
         link_dialog_type_add_media_embed, media_audio,
         media_image,
-        media_video, new_message, reply_message, isMobileWidth,
+        media_video, new_message, reply_message,
     } from "@/utils";
     import {
         getStoredChatEditMessageDto, getStoredChatEditMessageDtoOrNull, getStoredMessageEditSendButtonsType,
@@ -634,7 +634,7 @@
                 switch (type) { // see MessageEditSettingsModalContent
                     case 'auto':
                         const width = this.targetElement?.offsetWidth;
-                        this.chatStore.shouldShowSendMessageButtons = this.isMobile() ? true : !isMobileWidth(width);
+                        this.chatStore.shouldShowSendMessageButtons = this.isMobile() ? true : (width > 400);
                         break;
                     case 'full':
                         this.chatStore.shouldShowSendMessageButtons = true;

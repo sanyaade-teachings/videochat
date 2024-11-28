@@ -42,7 +42,7 @@ export default () => {
               if (this.isMobile()) {
                 return false;
               }
-              return true;
+              return !this.isVideoRoute();
             },
             initPositionAndPresenter() {
                 this.chatStore.videoPosition = getStoredVideoPosition();
