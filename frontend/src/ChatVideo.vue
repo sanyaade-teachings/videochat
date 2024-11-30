@@ -234,17 +234,19 @@ export default {
       if (this.canUsePresenter()) {
         if (this.presenterData) {
           this.presenterData.stream.videoTrack?.detach(this.$refs.presenterRef);
-          this.presenterData.stream = null;
+          this.presenterData = null;
         }
       }
     },
     detachPresenterIfNeed() {
-      if (this.presenterData?.stream) {
+      if (this.presenterData) {
         this.detachPresenter();
       }
     },
-    updatePresenter(data) { 
+    updatePresenter(data) {
       if (this.canUsePresenter()) {
+        this.detachPresenter();
+
         data.stream?.videoTrack?.attach(this.$refs.presenterRef);
         this.presenterData = data;
         this.updatePresenterVideoMute();
@@ -776,7 +778,6 @@ export default {
           }
           if (this.canUsePresenterPlain(newValue)) {
             this.$nextTick(() => {
-              this.detachPresenter();
               this.electNewPresenterForce();
             })
           }
@@ -793,7 +794,6 @@ export default {
         if (this.videoContainerDiv) {
           if (newValue) {
             this.$nextTick(()=>{
-              this.detachPresenter();
               this.electNewPresenterForce();
             })
           } else {
