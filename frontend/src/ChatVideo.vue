@@ -786,7 +786,7 @@ export default {
       handler: function (newValue, oldValue) {
         if (this.videoContainerDiv) {
           if (newValue) {
-            this.$nextTick(()=>{ // needed because videoContainerDiv still not visible for attaching
+            this.$nextTick(()=>{ // needed because videoContainerDiv still not visible for attaching from livekit js
               this.electNewPresenterForce();
             })
           } else {
