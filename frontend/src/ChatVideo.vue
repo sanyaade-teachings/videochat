@@ -786,7 +786,7 @@ export default {
       handler: function (newValue, oldValue) {
         if (this.videoContainerDiv) {
           if (newValue) {
-            this.$nextTick(()=>{
+            this.$nextTick(()=>{ // needed because videoContainerDiv still not visible for attaching
               this.electNewPresenterForce();
             })
           } else {
