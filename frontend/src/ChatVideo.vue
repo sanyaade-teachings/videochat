@@ -2,7 +2,8 @@
       <splitpanes :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal">
           <pane size="80" v-if="shouldShowPresenter">
               <div class="video-presenter-container-element">
-                  <video class="video-presenter-element" ref="presenterRef"/>
+                  <video v-show="!presenterVideoMute || !presenterAvatarIsSet" class="video-presenter-element" ref="presenterRef"/>
+                  <img v-show="presenterAvatarIsSet && presenterVideoMute" class="video-presenter-element" :src="presenterAvatar"/>
                   <VideoButtons/>
               </div>
           </pane>
@@ -28,8 +29,8 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from "axios";
 import { retry } from '@lifeomic/attempt';
 import {
-    defaultAudioMute,
-    getWebsocketUrlPrefix, isMobileBrowser, PURPOSE_CALL
+  defaultAudioMute,
+  getWebsocketUrlPrefix, hasLength, isMobileBrowser, PURPOSE_CALL
 } from "@/utils";
 import {
   getStoredAudioDevicePresents, getStoredCallAudioDeviceId, getStoredCallVideoDeviceId,
@@ -78,6 +79,7 @@ export default {
       userVideoComponents: new Map(),
       inRestarting: false,
       presenterVideoPublication: null,
+      presenterAvatar: null,
     }
   },
   methods: {
@@ -168,7 +170,7 @@ export default {
             candidateToAppendVideo.setAvatar(md.avatar);
             candidateToAppendVideo.setUserId(md.userId);
 
-            this.updatePresenterIfNeed(track);
+            this.updatePresenterIfNeed({stream: track, avatar: md.avatar}, false);
             this.recalculateLayout();
 
             return
@@ -236,19 +238,20 @@ export default {
         this.detachPresenter();
       }
     },
-    updatePresenter(stream) {
+    updatePresenter(data) { 
       if (this.canUsePresenter()) {
-        stream?.videoTrack?.attach(this.$refs.presenterRef);
-        this.presenterVideoPublication = stream;
+        data.stream?.videoTrack?.attach(this.$refs.presenterRef);
+        this.presenterAvatar = data.avatar;
+        this.presenterVideoPublication = data.stream;
       }
     },
-    updatePresenterIfNeed(stream, isSpeaking) {
+    updatePresenterIfNeed(data, isSpeaking) {
         if (this.chatStore.presenterEnabled) {
-          if (this.presenterVideoPublication?.trackSid != stream.trackSid &&
-              this.getPresenterPriority(stream, isSpeaking) > this.getPresenterPriority(this.presenterVideoPublication)
+          if (this.presenterVideoPublication?.trackSid != data.stream.trackSid &&
+              this.getPresenterPriority(data.stream, isSpeaking) > this.getPresenterPriority(this.presenterVideoPublication)
           ) {
             this.detachPresenterIfNeed();
-            this.updatePresenter(stream);
+            this.updatePresenter(data);
           }
         }
     },
@@ -285,16 +288,16 @@ export default {
     electNewPresenterIfNeed() {
       // about second: detachPresenterIfNeed() leaves presenterVideoPublication null
       if (this.chatStore.presenterEnabled && !this.presenterVideoPublication) {
-        const vs = this.getAnyPrioritizedVideoStream();
-        if (vs) {
-          this.updatePresenterIfNeed(vs);
+        const data = this.getAnyPrioritizedVideoData();
+        if (data) {
+          this.updatePresenterIfNeed(data, false);
         }
       }
     },
-    electNewPresenter() {
-      const vs = this.getAnyPrioritizedVideoStream();
-      if (vs) {
-        this.updatePresenter(vs);
+    electNewPresenterForce() {
+      const data = this.getAnyPrioritizedVideoData();
+      if (data) {
+        this.updatePresenter(data);
       }
     },
     removeComponent(userIdentity, track) {
@@ -336,7 +339,8 @@ export default {
             component.setSpeakingWithTimeout(1000);
 
             const videoStream = component.getVideoStream();
-            this.updatePresenterIfNeed(videoStream, true);
+            const avatar = component.getAvatar();
+            this.updatePresenterIfNeed({stream: videoStream, avatar: avatar}, true);
           }
         }
       }
@@ -634,19 +638,20 @@ export default {
       }
       return existingList;
     },
-    getAnyPrioritizedVideoStream() {
+    getAnyPrioritizedVideoData() {
       const tmp = [];
       for (const [_, list] of this.userVideoComponents) {
         for (const componentWrapper of list) {
           const vs = componentWrapper.component.getVideoStream();
+          const avatar = componentWrapper.component.getAvatar();
           if (vs && vs.kind == "video") {
-            tmp.push(vs);
+            tmp.push({stream: vs, avatar: avatar});
           }
         }
       }
 
       tmp.sort((a, b) => {
-        return this.getPresenterPriority(b) - this.getPresenterPriority(a);
+        return this.getPresenterPriority(b.stream) - this.getPresenterPriority(a.stream);
       });
       
       if (tmp.length) {
@@ -697,6 +702,19 @@ export default {
     shouldShowPresenter() {
       return this.chatStore.presenterEnabled && !this.videoIsGallery()
     },
+    presenterAvatarIsSet() {
+      return hasLength(this.presenterAvatar);
+    },
+    presenterVideoMute() {
+      const p = this.presenterVideoPublication;
+      if (p) {
+        const t = p.videoTrack;
+        if (t) {
+          return t.isMuted
+        }
+      }
+      return true
+    },
   },
   components: {
       Splitpanes,
@@ -714,7 +732,7 @@ export default {
           }
           if (this.canUsePresenterPlain(newValue)) {
             this.$nextTick(() => {
-              this.electNewPresenter();
+              this.electNewPresenterForce();
             })
           }
           if (videoIsGallery) {
@@ -730,7 +748,7 @@ export default {
         if (this.videoContainerDiv) {
           if (newValue) {
             this.$nextTick(()=>{
-              this.electNewPresenter();
+              this.electNewPresenterForce();
             })
           } else {
             this.detachPresenter();

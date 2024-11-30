@@ -132,6 +132,9 @@ export default {
         setAvatar(a) {
             this.avatar = a;
         },
+        getAvatar() {
+            return this.avatar;
+        },
         setDisplayVideoMute(newState, skipStoreUpdate) {
             this.videoMute = newState;
 
