@@ -238,11 +238,6 @@ export default {
         }
       }
     },
-    detachPresenterIfNeed() {
-      if (this.presenterData) {
-        this.detachPresenter();
-      }
-    },
     updatePresenter(data) {
       if (this.canUsePresenter()) {
         this.detachPresenter();
@@ -257,7 +252,7 @@ export default {
           if (this.presenterData?.stream?.trackSid != data.stream.trackSid &&
               this.getPresenterPriority(data.stream, isSpeaking) > this.getPresenterPriority(this.presenterData?.stream)
           ) {
-            this.detachPresenterIfNeed();
+            this.detachPresenter();
             this.updatePresenter(data);
           }
         }
@@ -337,7 +332,7 @@ export default {
           this.removeComponentForUser(userIdentity, componentWrapper);
 
           if (this.chatStore.presenterEnabled && this.presenterData?.stream && this.presenterData.stream.trackSid == component.getVideoStream()?.trackSid) {
-            this.detachPresenterIfNeed();
+            this.detachPresenter();
           }
         }
       }
@@ -880,7 +875,7 @@ export default {
         }
     });
 
-    this.detachPresenterIfNeed();
+    this.detachPresenter();
 
     this.stopRoom().then(()=>{
       console.log("Cleaning videoContainerDiv");
