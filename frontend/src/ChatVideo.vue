@@ -42,12 +42,11 @@ import {
 import bus, {
     ADD_SCREEN_SOURCE,
     ADD_VIDEO_SOURCE, CHANGE_VIDEO_SOURCE,
-    REQUEST_CHANGE_VIDEO_PARAMETERS, SET_LOCAL_MICROPHONE_MUTED,
+    REQUEST_CHANGE_VIDEO_PARAMETERS,
     VIDEO_PARAMETERS_CHANGED
 } from "@/bus/bus";
 import {chat_name, videochat_name} from "@/router/routes";
 import videoServerSettingsMixin from "@/mixins/videoServerSettingsMixin";
-import refreshLocalMutedInAppBarMixin from "@/mixins/refreshLocalMutedInAppBarMixin";
 import {useChatStore} from "@/store/chatStore";
 import {mapStores} from "pinia";
 import {goToPreservingQuery} from "@/mixins/searchString";
@@ -69,7 +68,6 @@ const classVideoComponentWrapperPositionGallery = 'video-component-wrapper-posit
 export default {
   mixins: [
     videoServerSettingsMixin(),
-    refreshLocalMutedInAppBarMixin(),
     videoPositionMixin(),
   ],
   props: ['chatId'],
@@ -281,7 +279,7 @@ export default {
       track.detach();
       this.removeComponent(participant.identity, track);
 
-      this.refreshLocalMicrophoneAppBarButtons();
+      this.refreshLocalMuteAppBarButtons();
       this.recalculateLayout();
     },
     electNewPresenterIfNeed() {
@@ -367,7 +365,7 @@ export default {
       const matchedVideoComponents = components.filter(e => trackPublication.trackSid == e.getVideoStreamId());
       const matchedAudioComponents = components.filter(e => trackPublication.trackSid == e.getAudioStreamId());
       for (const component of matchedVideoComponents) {
-        component.setVideoMute(trackPublication.isMuted);
+        component.setDisplayVideoMute(trackPublication.isMuted);
       }
       for (const component of matchedAudioComponents) {
         component.setDisplayAudioMute(trackPublication.isMuted);
@@ -427,7 +425,7 @@ export default {
             const participantTracks = this.room.localParticipant.getTrackPublications();
             this.drawNewComponentOrInsertIntoExisting(this.room.localParticipant, participantTracks, first, localVideoProperties);
 
-            this.refreshLocalMicrophoneAppBarButtons();
+            this.refreshLocalMuteAppBarButtons();
           } catch (e) {
             this.setError(e, "Error during reacting on local track published");
           }
@@ -488,32 +486,35 @@ export default {
       }
       return second
     },
-    refreshLocalMicrophoneAppBarButtons() {
-      const onlyOneLocalComponentWithAudio = this.onlyOneLocalTrackWithMicrophone(this.room.localParticipant.identity);
-      if (onlyOneLocalComponentWithAudio) {
+    refreshLocalMuteAppBarButtons() {
+      if (this.onlyOneLocalTrackWith(this.room.localParticipant.identity)) {
         this.chatStore.canShowMicrophoneButton = true;
       } else {
         this.chatStore.canShowMicrophoneButton = false;
       }
-    },
-    onlyOneLocalTrackWithMicrophone(userIdentity) {
-      const userComponents = this.getByUser(userIdentity).map(c => c.component);
-      const localComponentsWithAudio = userComponents.filter((component) => component.isComponentLocal() && component.getAudioStreamId() != null)
-      if (localComponentsWithAudio.length == 1) {
-        return localComponentsWithAudio[0]
+
+      if (this.onlyOneLocalTrackWith(this.room.localParticipant.identity, true)) {
+        this.chatStore.canShowVideoButton = true;
       } else {
-        return null
+        this.chatStore.canShowVideoButton = false;
       }
     },
-    onLocalMicrophoneMutedByAppBarButton(value) {
-      const onlyOneLocalComponentWithAudio = this.onlyOneLocalTrackWithMicrophone(this.room.localParticipant.identity)
-      if (onlyOneLocalComponentWithAudio) {
-        onlyOneLocalComponentWithAudio.doMuteAudio(value);
-        const muted = onlyOneLocalComponentWithAudio.audioMute;
-        this.refreshLocalMutedInAppBar(muted);
+    onlyOneLocalTrackWith(userIdentity, video) {
+      const userComponents = this.getByUser(userIdentity).map(c => c.component);
+      const localComponentsWith = userComponents.filter((component) => {
+        if (component.isComponentLocal()) {
+          if (video) {
+            return component.getVideoStreamId() != null
+          } else {
+            return component.getAudioStreamId() != null
+          }
+        }
+        return false
+      });
+      if (localComponentsWith.length == 1) {
+        return localComponentsWith[0]
       } else {
-        // just for case
-        this.chatStore.canShowMicrophoneButton = false;
+        return null
       }
     },
 
@@ -743,7 +744,29 @@ export default {
           this.recalculateLayout();
         }, 300)
       }
-    }
+    },
+    'chatStore.localMicrophone': {
+      handler: function (newValue, oldValue) {
+        const onlyOneLocalComponentWithAudio = this.onlyOneLocalTrackWith(this.room.localParticipant.identity)
+        if (onlyOneLocalComponentWithAudio) {
+          onlyOneLocalComponentWithAudio.doMuteAudio(!newValue, true);
+        } else {
+          // just for case
+          this.chatStore.canShowMicrophoneButton = false;
+        }
+      },
+    },
+    'chatStore.localVideo': {
+      handler: function (newValue, oldValue) {
+        const onlyOneLocalComponentWithVideo = this.onlyOneLocalTrackWith(this.room.localParticipant.identity, true)
+        if (onlyOneLocalComponentWithVideo) {
+          onlyOneLocalComponentWithVideo.doMuteVideo(!newValue, true);
+        } else {
+          // just for case
+          this.chatStore.canShowVideoButton = false;
+        }
+      },
+    },
   },
   created() {
     this.recalculateLayout = debounce(this.recalculateLayout);
@@ -778,7 +801,6 @@ export default {
     bus.on(ADD_VIDEO_SOURCE, this.onAddVideoSource);
     bus.on(ADD_SCREEN_SOURCE, this.onAddScreenSource);
     bus.on(REQUEST_CHANGE_VIDEO_PARAMETERS, this.tryRestartVideoDevice);
-    bus.on(SET_LOCAL_MICROPHONE_MUTED, this.onLocalMicrophoneMutedByAppBarButton);
     bus.on(CHANGE_VIDEO_SOURCE, this.onChangeVideoSource);
 
     window.addEventListener("resize", this.recalculateLayout);
@@ -823,7 +845,6 @@ export default {
     bus.off(ADD_VIDEO_SOURCE, this.onAddVideoSource);
     bus.off(ADD_SCREEN_SOURCE, this.onAddScreenSource);
     bus.off(REQUEST_CHANGE_VIDEO_PARAMETERS, this.tryRestartVideoDevice);
-    bus.off(SET_LOCAL_MICROPHONE_MUTED, this.onLocalMicrophoneMutedByAppBarButton);
     bus.off(CHANGE_VIDEO_SOURCE, this.onChangeVideoSource);
   },
 }

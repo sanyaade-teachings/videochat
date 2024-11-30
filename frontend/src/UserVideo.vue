@@ -18,7 +18,6 @@
 <script>
 
 import {hasLength} from "@/utils";
-import refreshLocalMutedInAppBarMixin from "@/mixins/refreshLocalMutedInAppBarMixin";
 import axios from "axios";
 import {mapStores} from "pinia";
 import {useChatStore} from "@/store/chatStore";
@@ -32,7 +31,6 @@ export default {
 	  name: 'UserVideo',
 
     mixins: [
-        refreshLocalMutedInAppBarMixin(),
         videoPositionMixin(),
     ],
 
@@ -77,7 +75,7 @@ export default {
         },
         setVideoStream(cameraPub, cameraEnabled) {
             console.info("Setting source video for videoRef=", this.$refs.videoRef, " track=", cameraPub, " video tag id=", this.id, ", enabled=", cameraEnabled);
-            this.setVideoMute(!cameraEnabled);
+            this.setDisplayVideoMute(!cameraEnabled);
             this.videoPublication = cameraPub;
 
             cameraPub?.videoTrack?.attach(this.$refs.videoRef);
@@ -103,11 +101,11 @@ export default {
         setUserName(u) {
             this.userName = u;
         },
-        setDisplayAudioMute(b) {
-            this.audioMute = b;
+        setDisplayAudioMute(newState, skipStoreUpdate) {
+            this.audioMute = newState;
 
-            if (this.isLocal) {
-                this.refreshLocalMutedInAppBar(b);
+            if (this.isLocal && !skipStoreUpdate) { // skipStoreUpdate prevents infinity recursion
+                this.chatStore.localMicrophone = !newState
             }
         },
         onEnterFullscreen(e) {
@@ -134,8 +132,12 @@ export default {
         setAvatar(a) {
             this.avatar = a;
         },
-        setVideoMute(newState) {
+        setDisplayVideoMute(newState, skipStoreUpdate) {
             this.videoMute = newState;
+
+            if (this.isLocal && !skipStoreUpdate) { // skipStoreUpdate prevents infinity recursion
+              this.chatStore.localVideo = !newState
+            }
         },
         getUserId() {
             return this.userId;
@@ -143,23 +145,23 @@ export default {
         setUserId(id) {
             this.userId = id;
         },
-        doMuteAudio(requestedState) {
+        doMuteAudio(requestedState, skipStoreUpdate) {
             if (requestedState) {
                 this.audioPublication?.mute();
             } else {
                 this.audioPublication?.unmute();
             }
-            this.setDisplayAudioMute(requestedState);
+            this.setDisplayAudioMute(requestedState, skipStoreUpdate);
 
             this.chatStore.muteAudioBlink = false;
         },
-        doMuteVideo(requestedState) {
+        doMuteVideo(requestedState, skipStoreUpdate) {
             if (requestedState) {
                 this.videoPublication?.mute();
             } else {
                 this.videoPublication?.unmute();
             }
-            this.setVideoMute(requestedState);
+            this.setDisplayVideoMute(requestedState, skipStoreUpdate);
         },
         onClose() {
             this.localVideoProperties.localParticipant.unpublishTrack(this.videoPublication?.videoTrack);
