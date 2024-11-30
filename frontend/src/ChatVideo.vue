@@ -231,24 +231,22 @@ export default {
     // TODO подумать, где сделать кнопку (только для админа чата) "замьютить всех кроме меня" - на пульте
     // TODO выбрать side + presenter по дефолту на десктопе, НО НЕ на мобилке
     detachPresenter() {
-      if (this.canUsePresenter()) {
-        if (this.presenterData) {
-          this.presenterData.stream.videoTrack?.detach(this.$refs.presenterRef);
-          this.presenterData = null;
-        }
+      if (this.presenterData) {
+        this.presenterData.stream.videoTrack?.detach(this.$refs.presenterRef);
+        this.presenterData = null;
       }
     },
     updatePresenter(data) {
-      if (this.canUsePresenter()) {
-        this.detachPresenter();
+      this.detachPresenter();
 
-        data.stream?.videoTrack?.attach(this.$refs.presenterRef);
+      if (data?.stream) {
+        data.stream.videoTrack?.attach(this.$refs.presenterRef);
         this.presenterData = data;
         this.updatePresenterVideoMute();
       }
     },
     updatePresenterIfNeed(data, isSpeaking) {
-        if (this.chatStore.presenterEnabled) {
+        if (this.chatStore.presenterEnabled && this.canUsePresenter()) {
           if (this.presenterData?.stream?.trackSid != data.stream.trackSid &&
               this.getPresenterPriority(data.stream, isSpeaking) > this.getPresenterPriority(this.presenterData?.stream)
           ) {
