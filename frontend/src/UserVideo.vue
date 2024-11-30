@@ -10,7 +10,7 @@
         </div>
         <img v-show="avatarIsSet && videoMute" @click="showControls=!showControls" :class="videoElementClass" :src="avatar"/>
         <video v-show="!videoMute || !avatarIsSet" @click="showControls=!showControls" :class="videoElementClass" :id="id" autoPlay playsInline ref="videoRef"/>
-        <p v-bind:class="[speaking ? 'video-container-element-caption-speaking' : '', errored ? 'video-container-element-caption-errored' : '', 'video-container-element-caption']">{{ userName }} <v-icon v-if="audioMute">mdi-microphone-off</v-icon></p>
+        <p v-bind:class="[speaking ? 'video-container-element-caption-speaking' : '', 'video-container-element-caption']">{{ userName }} <v-icon v-if="audioMute">mdi-microphone-off</v-icon></p>
     </div>
 </template>
 
@@ -21,12 +21,14 @@ import axios from "axios";
 import {mapStores} from "pinia";
 import {useChatStore} from "@/store/chatStore";
 import videoPositionMixin from "@/mixins/videoPositionMixin.js";
+import speakingMixin from "@/mixins/speakingMixin.js";
 
 export default {
 	  name: 'UserVideo',
 
     mixins: [
         videoPositionMixin(),
+        speakingMixin(),
     ],
 
     data()  {
@@ -34,7 +36,6 @@ export default {
 	    return {
             userName: loadingMessage,
             audioMute: true,
-            speaking: false,
             errorDescription: null,
             avatar: "",
             videoMute: true,
@@ -42,7 +43,6 @@ export default {
             showControls: false,
             audioPublication: null,
             videoPublication: null,
-            speakingTimer: null,
       }
     },
 
@@ -115,18 +115,6 @@ export default {
                 elem.requestFullscreen();
             }
         },
-        setSpeaking(speaking) {
-            this.speaking = speaking;
-        },
-        setSpeakingWithTimeout(timeout) {
-            if (!this.speakingTimer) {
-                this.speaking = true;
-                this.speakingTimer = setTimeout(() => {
-                    this.speaking = false;
-                    this.speakingTimer = null;
-                }, timeout);
-            }
-        },
         setAvatar(a) {
             this.avatar = a;
         },
@@ -193,9 +181,6 @@ export default {
         ...mapStores(useChatStore),
         avatarIsSet() {
             return hasLength(this.avatar);
-        },
-        errored() {
-            return false;
         },
         isLocal() {
             return !!this.localVideoProperties;
@@ -326,10 +311,6 @@ export default {
 
     .video-container-element-caption-speaking {
         text-shadow: -2px 0 #9cffa1, 0 2px #9cffa1, 2px 0 #9cffa1, 0 -2px #9cffa1;
-    }
-
-    .video-container-element-caption-errored {
-        text-shadow: -2px 0 #ff9c9c, 0 2px #ff9c9c, 2px 0 #ff9c9c, 0 -2px #ff9c9c;
     }
 
 </style>

@@ -4,6 +4,8 @@
               <div class="video-presenter-container-element">
                   <video v-show="!presenterVideoMute || !presenterAvatarIsSet" class="video-presenter-element" ref="presenterRef"/>
                   <img v-show="presenterAvatarIsSet && presenterVideoMute" class="video-presenter-element" :src="presenterData?.avatar"/>
+                  <p v-bind:class="[speaking ? 'presenter-element-caption-speaking' : '', 'presenter-element-caption']">{{ presenterData?.userName }} <v-icon v-if="presenterAudioMute">mdi-microphone-off</v-icon></p>
+
                   <VideoButtons @requestFullScreen="onButtonsFullscreen" v-show="showControls"/>
               </div>
           </pane>
@@ -57,6 +59,7 @@ import { Splitpanes, Pane } from 'splitpanes';
 import {largestRect} from "rect-scaler";
 import debounce from "lodash/debounce";
 import VideoButtons from "./VideoButtons.vue"
+import speakingMixin from "@/mixins/speakingMixin.js";
 
 const first = 'first';
 const second = 'second';
@@ -70,6 +73,7 @@ export default {
   mixins: [
     videoServerSettingsMixin(),
     videoPositionMixin(),
+    speakingMixin(),
   ],
   props: ['chatId'],
   data() {
@@ -80,6 +84,7 @@ export default {
       inRestarting: false,
       presenterData: null,
       presenterVideoMute: false,
+      presenterAudioMute: true,
       showControls: false,
     }
   },
@@ -232,23 +237,29 @@ export default {
     // TODO выбрать side + presenter по дефолту на десктопе, НО НЕ на мобилке
     detachPresenter() {
       if (this.presenterData) {
-        this.presenterData.stream.videoTrack?.detach(this.$refs.presenterRef);
+        this.presenterData.videoStream.videoTrack?.detach(this.$refs.presenterRef);
         this.presenterData = null;
       }
     },
     updatePresenter(data) {
       this.detachPresenter();
 
-      if (data?.stream) {
-        data.stream.videoTrack?.attach(this.$refs.presenterRef);
+      if (data?.videoStream) {
+        data.videoStream.videoTrack?.attach(this.$refs.presenterRef);
         this.presenterData = data;
         this.updatePresenterVideoMute();
+      }
+      if (data?.audioStream) {
+        this.updatePresenterAudioMute();
       }
     },
     updatePresenterIfNeed(data, isSpeaking) {
         if (this.chatStore.presenterEnabled && this.canUsePresenter()) {
-          if (this.presenterData?.stream?.trackSid != data.stream.trackSid &&
-              this.getPresenterPriority(data.stream, isSpeaking) > this.getPresenterPriority(this.presenterData?.stream)
+          if (this.presenterData?.videoStream?.trackSid === data.videoStream.trackSid && isSpeaking) {
+            this.setSpeakingWithDefaultTimeout();
+          }
+          if (this.presenterData?.videoStream?.trackSid !== data.videoStream.trackSid &&
+              this.getPresenterPriority(data.videoStream, isSpeaking) > this.getPresenterPriority(this.presenterData?.videoStream)
           ) {
             this.detachPresenter();
             this.updatePresenter(data);
@@ -259,9 +270,22 @@ export default {
       this.presenterVideoMute = this.getPresenterVideoMute();
     },
     getPresenterVideoMute() {
-      const p = this.presenterData?.stream;
+      const p = this.presenterData?.videoStream;
       if (p) {
         const t = p.videoTrack;
+        if (t) {
+          return t.isMuted
+        }
+      }
+      return true
+    },
+    updatePresenterAudioMute() {
+      this.presenterAudioMute = this.getPresenterAudioMute();
+    },
+    getPresenterAudioMute() {
+      const p = this.presenterData?.audioStream;
+      if (p) {
+        const t = p.audioTrack;
         if (t) {
           return t.isMuted
         }
@@ -300,7 +324,7 @@ export default {
     },
     electNewPresenterIfNeed() {
       // about second: detachPresenterIfNeed() leaves presenterVideoPublication null
-      if (this.chatStore.presenterEnabled && !this.presenterData?.stream) {
+      if (this.chatStore.presenterEnabled && !this.presenterData?.videoStream) {
         const data = this.getAnyPrioritizedVideoData();
         if (data) {
           this.updatePresenterIfNeed(data, false);
@@ -329,7 +353,7 @@ export default {
           }
           this.removeComponentForUser(userIdentity, componentWrapper);
 
-          if (this.chatStore.presenterEnabled && this.presenterData?.stream && this.presenterData.stream.trackSid == component.getVideoStream()?.trackSid) {
+          if (this.chatStore.presenterEnabled && this.presenterData?.videoStream && this.presenterData.videoStream.trackSid == component.getVideoStream()?.trackSid) {
             this.detachPresenter();
           }
         }
@@ -349,7 +373,7 @@ export default {
           const audioStreamId = component.getAudioStreamId();
           console.debug("Track sids", tracksSids, " component audio stream id", audioStreamId);
           if (tracksSids.includes(component.getAudioStreamId())) {
-            component.setSpeakingWithTimeout(1000);
+            component.setSpeakingWithDefaultTimeout();
 
             const data = this.getDataForPresenter(component);
             this.updatePresenterIfNeed(data, true);
@@ -360,9 +384,10 @@ export default {
     getDataForPresenter(component) {
       const id = component.getUserId();
       const userName = component.getUserName();
-      const videoStream = component.getVideoStream();
+      const videoPublication = component.getVideoStream();
+      const audioPublication = component.getAudioStream();
       const avatar = component.getAvatar();
-      return {stream: videoStream, avatar: avatar, userId: id, userName: userName}
+      return {videoStream: videoPublication, audioStream: audioPublication, avatar: avatar, userId: id, userName: userName}
     },
 
     handleDisconnect() {
@@ -389,12 +414,15 @@ export default {
       const matchedAudioComponents = components.filter(e => trackPublication.trackSid == e.getAudioStreamId());
       for (const component of matchedVideoComponents) {
         component.setDisplayVideoMute(trackPublication.isMuted);
-        if (component.getVideoStreamId() && this.presenterData?.stream && component.getVideoStreamId() == this.presenterData.stream.trackSid) {
+        if (component.getVideoStreamId() && this.presenterData?.videoStream && component.getVideoStreamId() == this.presenterData.videoStream.trackSid) {
           this.updatePresenterVideoMute();
         }
       }
       for (const component of matchedAudioComponents) {
         component.setDisplayAudioMute(trackPublication.isMuted);
+        if (component.getAudioStreamId() && this.presenterData?.audioStream && component.getAudioStreamId() == this.presenterData.audioStream.trackSid) {
+          this.updatePresenterAudioMute();
+        }
       }
     },
 
@@ -668,14 +696,14 @@ export default {
       for (const [_, list] of this.userVideoComponents) {
         for (const componentWrapper of list) {
           const data = this.getDataForPresenter(componentWrapper.component);
-          if (data.stream && data.stream.kind == "video") {
+          if (data.videoStream && data.videoStream.kind == "video") {
             tmp.push(data);
           }
         }
       }
 
       tmp.sort((a, b) => {
-        return this.getPresenterPriority(b.stream) - this.getPresenterPriority(a.stream);
+        return this.getPresenterPriority(b.videoStream) - this.getPresenterPriority(a.videoStream);
       });
       
       if (tmp.length) {
@@ -982,6 +1010,29 @@ export default {
 .pane-videos-vertical {
   display: flex;
   align-items center
+}
+
+.presenter-element-caption {
+  z-index 2
+  display inherit
+  margin: 0;
+  left 0.4em
+  bottom 0.4em
+  position: absolute
+  background rgba(255, 255, 255, 0.65)
+  max-width: calc(100% - 1em) // still needed for thin (vertical) video on mobile - it prevents bulging
+  padding-left 0.3em
+  padding-right 0.3em
+  border-radius 4px
+  //word-wrap: break-word;
+  //overflow-wrap: break-all
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.presenter-element-caption-speaking {
+  text-shadow: -2px 0 #9cffa1, 0 2px #9cffa1, 2px 0 #9cffa1, 0 -2px #9cffa1;
 }
 
 </style>
