@@ -8,7 +8,6 @@
             <v-btn variant="plain" icon v-if="!isLocal && canVideoKick" @click="kickRemote()" :title="$vuetify.locale.t('$vuetify.kick')"><v-icon size="x-large" class="video-container-element-control-item">mdi-block-helper</v-icon></v-btn>
             <v-btn variant="plain" icon v-if="!isLocal && canAudioMute" @click="forceMuteRemote()" :title="$vuetify.locale.t('$vuetify.force_mute')"><v-icon size="x-large" class="video-container-element-control-item">mdi-microphone-off</v-icon></v-btn>
         </div>
-        <span v-if="!isLocal && avatarIsSet" class="video-container-element-hint">{{ $vuetify.locale.t('$vuetify.video_is_not_shown') }}</span>
         <img v-show="avatarIsSet && videoMute" @click="showControls=!showControls" :class="videoElementClass" :src="avatar"/>
         <video v-show="!videoMute || !avatarIsSet" @click="showControls=!showControls" :class="videoElementClass" :id="id" autoPlay playsInline ref="videoRef"/>
         <p v-bind:class="[speaking ? 'video-container-element-caption-speaking' : '', errored ? 'video-container-element-caption-errored' : '', 'video-container-element-caption']">{{ userName }} <v-icon v-if="audioMute">mdi-microphone-off</v-icon></p>
@@ -307,21 +306,6 @@ export default {
     .video-container-element-control-item {
         z-index 4
         text-shadow: -2px 0 white, 0 2px white, 2px 0 white, 0 -2px white;
-    }
-
-    .video-container-element-hint {
-        z-index 1
-        display inherit
-        margin: 0;
-        top 2em
-        left 0.4em
-        text-shadow: -2px 0 white, 0 2px white, 2px 0 white, 0 -2px white;
-        position: absolute
-        width: 90%;
-        //word-wrap: break-word;
-        //overflow-wrap: break-all
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 
     .video-container-element-caption {
