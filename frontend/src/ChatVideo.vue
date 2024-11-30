@@ -1,15 +1,15 @@
 <template>
-      <splitpanes :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal" ref="panesContainerRef">
+      <splitpanes :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal" ref="panesContainerRef" @mouseenter="onMouseEnter()" @mouseleave="onMouseLeave()">
           <pane size="80" v-if="shouldShowPresenter">
               <div class="video-presenter-container-element">
                   <video v-show="!presenterVideoMute || !presenterAvatarIsSet" class="video-presenter-element" ref="presenterRef"/>
                   <img v-show="presenterAvatarIsSet && presenterVideoMute" class="video-presenter-element" :src="presenterAvatar"/>
-                  <VideoButtons @requestFullScreen="onButtonsFullscreen"/>
+                  <VideoButtons @requestFullScreen="onButtonsFullscreen" v-show="showControls"/>
               </div>
           </pane>
           <pane :class="paneVideoContainerClass">
               <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"></v-col>
-              <VideoButtons v-if="!shouldShowPresenter" @requestFullScreen="onButtonsFullscreen"/>
+              <VideoButtons v-if="!shouldShowPresenter" @requestFullScreen="onButtonsFullscreen" v-show="showControls"/>
           </pane>
       </splitpanes>
 </template>
@@ -81,6 +81,7 @@ export default {
       presenterVideoPublication: null,
       presenterAvatar: null,
       presenterVideoMute: false,
+      showControls: false,
     }
   },
   methods: {
@@ -716,6 +717,16 @@ export default {
         document.exitFullscreen();
       } else {
         elem.requestFullscreen();
+      }
+    },
+    onMouseEnter() {
+      if (!this.isMobile()) {
+        this.showControls = true;
+      }
+    },
+    onMouseLeave() {
+      if (!this.isMobile()) {
+        this.showControls = false;
       }
     },
   },

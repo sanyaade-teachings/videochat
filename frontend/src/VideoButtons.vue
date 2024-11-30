@@ -24,12 +24,12 @@ export default {
     ...mapStores(useChatStore),
     videoButtonsControlClass() {
       if (this.videoIsHorizontal() || this.videoIsGallery()) {
-        return "video-buttons-control-horizontal"
+        return ["video-buttons-control", "video-buttons-control-horizontal"]
       } else if (this.videoIsVertical())  {
         if (!this.chatStore.presenterEnabled) {
-          return "video-buttons-control-vertical"
+          return ["video-buttons-control", "video-buttons-control-vertical"]
         } else {
-          return "video-buttons-control-horizontal"
+          return ["video-buttons-control", "video-buttons-control-horizontal"]
         }
       } else {
         return null;
@@ -53,9 +53,15 @@ export default {
 
 <style scoped lang="stylus">
 
+.video-buttons-control {
+  background rgba(255, 255, 255, 0.65)
+  padding-left 0.3em
+  padding-right 0.3em
+  border-radius 4px
+}
+
 .video-buttons-control-horizontal {
   position: absolute;
-  background: #f00;
   bottom 10px
   z-index 20
 }
@@ -63,7 +69,6 @@ export default {
 .video-buttons-control-vertical {
   margin-left: 10px;
   position: absolute;
-  background: #f00;
   display: flex;
   flex-direction: column;
   z-index 20
