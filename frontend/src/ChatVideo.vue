@@ -255,14 +255,14 @@ export default {
     },
     updatePresenterIfNeed(data, isSpeaking) {
         if (this.chatStore.presenterEnabled && this.canUsePresenter()) {
-          if (this.presenterData?.videoStream?.trackSid === data.videoStream.trackSid && isSpeaking) {
-            this.setSpeakingWithDefaultTimeout();
-          }
           if (this.presenterData?.videoStream?.trackSid !== data.videoStream.trackSid &&
               this.getPresenterPriority(data.videoStream, isSpeaking) > this.getPresenterPriority(this.presenterData?.videoStream)
           ) {
             this.detachPresenter();
             this.updatePresenter(data);
+          }
+          if (this.presenterData?.videoStream?.trackSid === data.videoStream.trackSid && isSpeaking) {
+            this.setSpeakingWithDefaultTimeout();
           }
         }
     },
