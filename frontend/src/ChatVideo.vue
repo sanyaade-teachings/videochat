@@ -236,7 +236,7 @@ export default {
     // TODO выбрать side + presenter по дефолту на десктопе, НО НЕ на мобилке
     detachPresenter() {
       if (this.presenterData) {
-        this.presenterData.videoStream.videoTrack?.detach(this.$refs.presenterRef);
+        this.presenterData.videoStream?.videoTrack?.detach(this.$refs.presenterRef);
         this.presenterData = null;
       }
     },
