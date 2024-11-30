@@ -229,10 +229,10 @@ export default {
             return 0
       }
     },
+    // TODO на пульт red tube (end call), share screen, add a source, для админа чата - "замьютить всех кроме меня", users (ChatParticipants), presenter = [on, off], videoPosition = [...], chats = [on, off], messages = [on, off]
     // TODO если пользак кликнул по элементу UserVideo, то его выбирать (override в Presenter)
     // TODO восстановить сохранение позиций SplitPane в ChatView + в ChatVideo
     // TODO think how to reuse the presenter mode with egress
-    // TODO подумать, где сделать кнопку (только для админа чата) "замьютить всех кроме меня" - на пульте
     // TODO выбрать side + presenter по дефолту на десктопе, НО НЕ на мобилке
     detachPresenter() {
       if (this.presenterData) {
