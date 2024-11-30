@@ -80,6 +80,7 @@ export default {
       inRestarting: false,
       presenterVideoPublication: null,
       presenterAvatar: null,
+      presenterVideoMute: false,
     }
   },
   methods: {
@@ -245,6 +246,7 @@ export default {
         data.stream?.videoTrack?.attach(this.$refs.presenterRef);
         this.presenterAvatar = data.avatar;
         this.presenterVideoPublication = data.stream;
+        this.updatePresenterVideoMute();
       }
     },
     updatePresenterIfNeed(data, isSpeaking) {
@@ -256,6 +258,19 @@ export default {
             this.updatePresenter(data);
           }
         }
+    },
+    updatePresenterVideoMute() {
+      this.presenterVideoMute = this.getPresenterVideoMute();
+    },
+    getPresenterVideoMute() {
+      const p = this.presenterVideoPublication;
+      if (p) {
+        const t = p.videoTrack;
+        if (t) {
+          return t.isMuted
+        }
+      }
+      return true
     },
     canUsePresenterPlain(v) {
       return !this.videoIsGalleryPlain(v);
@@ -378,6 +393,9 @@ export default {
       const matchedAudioComponents = components.filter(e => trackPublication.trackSid == e.getAudioStreamId());
       for (const component of matchedVideoComponents) {
         component.setDisplayVideoMute(trackPublication.isMuted);
+        if (component.getVideoStreamId() == this.presenterVideoPublication?.trackSid) {
+          this.updatePresenterVideoMute();
+        }
       }
       for (const component of matchedAudioComponents) {
         component.setDisplayAudioMute(trackPublication.isMuted);
@@ -711,16 +729,6 @@ export default {
     },
     presenterAvatarIsSet() {
       return hasLength(this.presenterAvatar);
-    },
-    presenterVideoMute() {
-      const p = this.presenterVideoPublication;
-      if (p) {
-        const t = p.videoTrack;
-        if (t) {
-          return t.isMuted
-        }
-      }
-      return true
     },
   },
   components: {
