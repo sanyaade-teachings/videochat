@@ -169,6 +169,9 @@ export default {
         isComponentLocal() {
             return this.isLocal
         },
+        getVideoSource() {
+          return this.videoPublication?.source
+        },
         onMouseEnter() {
             if (!this.isMobile()) {
                 this.showControls = true;

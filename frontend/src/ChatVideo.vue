@@ -530,6 +530,9 @@ export default {
       const localComponentsWith = userComponents.filter((component) => {
         if (component.isComponentLocal()) {
           if (video) {
+            if (component.getVideoSource() === "screen_share") {
+              return false
+            }
             return component.getVideoStreamId() != null
           } else {
             return component.getAudioStreamId() != null
