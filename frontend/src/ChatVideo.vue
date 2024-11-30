@@ -7,7 +7,7 @@
                   <VideoButtons @requestFullScreen="onButtonsFullscreen"/>
               </div>
           </pane>
-          <pane class="pane-videos">
+          <pane :class="paneVideoContainerClass">
               <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"></v-col>
               <VideoButtons v-if="!shouldShowPresenter" @requestFullScreen="onButtonsFullscreen"/>
           </pane>
@@ -733,6 +733,15 @@ export default {
         return 'video-container-position-vertical'
       }
     },
+    paneVideoContainerClass() {
+      if (this.videoIsHorizontal() || this.videoIsGallery()) {
+        return 'pane-videos-horizontal'
+      } else if (this.videoIsVertical())  {
+        return 'pane-videos-vertical'
+      } else {
+        return null;
+      }
+    },
     shouldShowPresenter() {
       return this.chatStore.presenterEnabled && !this.videoIsGallery()
     },
@@ -955,10 +964,15 @@ export default {
     background black
 }
 
-// need to center the nested video puttons
-.pane-videos {
+// need to center the nested video buttons
+.pane-videos-horizontal {
   display: flex;
   justify-content: center;
+}
+
+.pane-videos-vertical {
+  display: flex;
+  align-items center
 }
 
 </style>
