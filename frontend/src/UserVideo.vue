@@ -1,7 +1,7 @@
 <template>
     <div :class="videoContainerElementClass" ref="containerRef" @mouseenter="onMouseEnter()" @mouseleave="onMouseLeave()">
         <div class="video-container-element-control" v-show="showControls">
-            <v-btn variant="plain" icon v-if="isLocal && audioPublication != null" @click="doMuteAudio(!audioMute)" :title="audioMute ? $vuetify.locale.t('$vuetify.unmute_audio') : $vuetify.locale.t('$vuetify.mute_audio')"><v-icon size="x-large" :class="['video-container-element-control-item', chatStore.muteAudioBlink && audioMute ? 'info-blink' : '']">{{ audioMute ? 'mdi-microphone-off' : 'mdi-microphone' }}</v-icon></v-btn>
+            <v-btn variant="plain" icon v-if="isLocal && audioPublication != null" @click="doMuteAudio(!audioMute)" :title="audioMute ? $vuetify.locale.t('$vuetify.unmute_audio') : $vuetify.locale.t('$vuetify.mute_audio')"><v-icon size="x-large" class="video-container-element-control-item">{{ audioMute ? 'mdi-microphone-off' : 'mdi-microphone' }}</v-icon></v-btn>
             <v-btn variant="plain" icon v-if="isLocal && videoPublication != null" @click="doMuteVideo(!videoMute)" :title="videoMute ? $vuetify.locale.t('$vuetify.unmute_video') : $vuetify.locale.t('$vuetify.mute_video')"><v-icon size="x-large" class="video-container-element-control-item">{{ videoMute ? 'mdi-video-off' : 'mdi-video' }} </v-icon></v-btn>
             <v-btn variant="plain" icon @click="onEnterFullscreen" :title="$vuetify.locale.t('$vuetify.fullscreen')"><v-icon size="x-large" class="video-container-element-control-item">mdi-arrow-expand-all</v-icon></v-btn>
             <v-btn variant="plain" icon v-if="isLocal" @click="onClose()" :title="$vuetify.locale.t('$vuetify.close')"><v-icon size="x-large" class="video-container-element-control-item">mdi-close</v-icon></v-btn>
@@ -47,7 +47,7 @@ export default {
             audioPublication: null,
             videoPublication: null,
             speakingTimer: null,
-        }
+      }
     },
 
     props: {
@@ -157,8 +157,6 @@ export default {
                 this.audioPublication?.unmute();
             }
             this.setDisplayAudioMute(requestedState, skipStoreUpdate);
-
-            this.chatStore.muteAudioBlink = false;
         },
         doMuteVideo(requestedState, skipStoreUpdate) {
             if (requestedState) {
@@ -333,14 +331,6 @@ export default {
 
     .video-container-element-caption-errored {
         text-shadow: -2px 0 #ff9c9c, 0 2px #ff9c9c, 2px 0 #ff9c9c, 0 -2px #ff9c9c;
-    }
-
-    .info-blink {
-        animation: blink 0.5s infinite;
-    }
-
-    @keyframes blink {
-        50% { opacity: 10% }
     }
 
 </style>
