@@ -229,7 +229,6 @@ export default {
             return 0
       }
     },
-    // TODO сделать подпись (логин, микрофон) в presenter
     // TODO если пользак кликнул по элементу UserVideo, то его выбирать (override в Presenter)
     // TODO восстановить сохранение позиций SplitPane в ChatView + в ChatVideo
     // TODO think how to reuse the presenter mode with egress
