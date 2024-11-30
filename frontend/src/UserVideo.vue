@@ -101,6 +101,9 @@ export default {
         setUserName(u) {
             this.userName = u;
         },
+        getUserName() {
+            return this.userName;
+        },
         setDisplayAudioMute(newState, skipStoreUpdate) {
             this.audioMute = newState;
 

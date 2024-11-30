@@ -170,7 +170,9 @@ export default {
             candidateToAppendVideo.setAvatar(md.avatar);
             candidateToAppendVideo.setUserId(md.userId);
 
-            this.updatePresenterIfNeed({stream: track, avatar: md.avatar}, false);
+            const data = this.getDataForPresenter(candidateToAppendVideo);
+
+            this.updatePresenterIfNeed(data, false);
             this.recalculateLayout();
 
             return
@@ -338,12 +340,18 @@ export default {
           if (tracksSids.includes(component.getAudioStreamId())) {
             component.setSpeakingWithTimeout(1000);
 
-            const videoStream = component.getVideoStream();
-            const avatar = component.getAvatar();
-            this.updatePresenterIfNeed({stream: videoStream, avatar: avatar}, true);
+            const data = this.getDataForPresenter(component);
+            this.updatePresenterIfNeed(data, true);
           }
         }
       }
+    },
+    getDataForPresenter(component) {
+      const id = component.getUserId();
+      const userName = component.getUserName();
+      const videoStream = component.getVideoStream();
+      const avatar = component.getAvatar();
+      return {stream: videoStream, avatar: avatar, userId: id, userName: userName}
     },
 
     handleDisconnect() {
@@ -642,10 +650,9 @@ export default {
       const tmp = [];
       for (const [_, list] of this.userVideoComponents) {
         for (const componentWrapper of list) {
-          const vs = componentWrapper.component.getVideoStream();
-          const avatar = componentWrapper.component.getAvatar();
-          if (vs && vs.kind == "video") {
-            tmp.push({stream: vs, avatar: avatar});
+          const data = this.getDataForPresenter(componentWrapper.component);
+          if (data.stream && data.stream.kind == "video") {
+            tmp.push(data);
           }
         }
       }
