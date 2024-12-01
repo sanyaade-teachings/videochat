@@ -2,8 +2,8 @@
       <splitpanes :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal" ref="panesContainerRef" @mouseenter="onMouseEnter()" @mouseleave="onMouseLeave()">
           <pane size="80" v-if="shouldShowPresenter">
               <div class="video-presenter-container-element">
-                  <video v-show="!presenterVideoMute || !presenterAvatarIsSet" class="video-presenter-element" ref="presenterRef"/>
-                  <img v-show="presenterAvatarIsSet && presenterVideoMute" class="video-presenter-element" :src="presenterData?.avatar"/>
+                  <video v-show="!presenterVideoMute || !presenterAvatarIsSet" @click.stop.prevent="onClick()" class="video-presenter-element" ref="presenterRef"/>
+                  <img v-show="presenterAvatarIsSet && presenterVideoMute" @click.stop.prevent="onClick()" class="video-presenter-element" :src="presenterData?.avatar"/>
                   <p v-bind:class="[speaking ? 'presenter-element-caption-speaking' : '', 'presenter-element-caption']">{{ presenterData?.userName ? presenterData?.userName : getLoadingMessage() }} <v-icon v-if="presenterAudioMute">mdi-microphone-off</v-icon></p>
 
                   <VideoButtons @requestFullScreen="onButtonsFullscreen" v-show="showControls"/>
@@ -756,6 +756,9 @@ export default {
     },
     getLoadingMessage () {
          return loadingMessage
+    },
+    onClick() {
+      this.showControls =! this.showControls
     },
   },
   computed: {
