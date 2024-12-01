@@ -8,8 +8,8 @@
             <v-btn variant="plain" icon v-if="!isLocal && canVideoKick" @click="kickRemote()" :title="$vuetify.locale.t('$vuetify.kick')"><v-icon size="x-large" class="video-container-element-control-item">mdi-block-helper</v-icon></v-btn>
             <v-btn variant="plain" icon v-if="!isLocal && canAudioMute" @click="forceMuteRemote()" :title="$vuetify.locale.t('$vuetify.force_mute')"><v-icon size="x-large" class="video-container-element-control-item">mdi-microphone-off</v-icon></v-btn>
         </div>
-        <img v-show="avatarIsSet && videoMute" @click.stop.prevent="onClick()" :class="videoElementClass" :src="avatar"/>
-        <video v-show="!videoMute || !avatarIsSet" @click.stop.prevent="onClick()" :class="videoElementClass" :id="id" autoPlay playsInline ref="videoRef"/>
+        <img v-show="avatarIsSet && videoMute" @click="onClick" :class="videoElementClass" :src="avatar"/>
+        <video v-show="!videoMute || !avatarIsSet" @click="onClick" :class="videoElementClass" :id="id" autoPlay playsInline ref="videoRef"/>
         <p v-bind:class="[speaking ? 'video-container-element-caption-speaking' : '', 'video-container-element-caption']">{{ userName }} <v-icon v-if="audioMute">mdi-microphone-off</v-icon></p>
     </div>
 </template>
@@ -175,7 +175,10 @@ export default {
         forceMuteRemote() {
             axios.put(`/api/video/${this.chatStore.chatDto.id}/mute?userId=${this.userId}`)
         },
-        onClick() {
+        onClick(e) {
+          if (!this.videoIsGallery()) {
+            e.stopPropagation()
+          }
           this.showControls =! this.showControls
         },
     },

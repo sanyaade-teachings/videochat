@@ -9,7 +9,7 @@
                   <VideoButtons @requestFullScreen="onButtonsFullscreen" v-show="showControls"/>
               </div>
           </pane>
-          <pane :class="paneVideoContainerClass">
+          <pane :class="paneVideoContainerClass" @click.stop.prevent="onClick()">
               <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"></v-col>
               <VideoButtons v-if="!shouldShowPresenter" @requestFullScreen="onButtonsFullscreen" v-show="showControls"/>
           </pane>
