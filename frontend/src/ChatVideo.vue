@@ -4,7 +4,7 @@
               <div class="video-presenter-container-element">
                   <video v-show="!presenterVideoMute || !presenterAvatarIsSet" class="video-presenter-element" ref="presenterRef"/>
                   <img v-show="presenterAvatarIsSet && presenterVideoMute" class="video-presenter-element" :src="presenterData?.avatar"/>
-                  <p v-bind:class="[speaking ? 'presenter-element-caption-speaking' : '', 'presenter-element-caption']">{{ presenterData?.userName }} <v-icon v-if="presenterAudioMute">mdi-microphone-off</v-icon></p>
+                  <p v-bind:class="[speaking ? 'presenter-element-caption-speaking' : '', 'presenter-element-caption']">{{ presenterData?.userName ? presenterData?.userName : getLoadingMessage() }} <v-icon v-if="presenterAudioMute">mdi-microphone-off</v-icon></p>
 
                   <VideoButtons @requestFullScreen="onButtonsFullscreen" v-show="showControls"/>
               </div>
@@ -32,7 +32,7 @@ import axios from "axios";
 import { retry } from '@lifeomic/attempt';
 import {
   defaultAudioMute,
-  getWebsocketUrlPrefix, hasLength, isFullscreen, isMobileBrowser, PURPOSE_CALL
+  getWebsocketUrlPrefix, hasLength, isFullscreen, isMobileBrowser, loadingMessage, PURPOSE_CALL
 } from "@/utils";
 import {
   getStoredAudioDevicePresents, getStoredCallAudioDeviceId, getStoredCallVideoDeviceId,
@@ -753,6 +753,9 @@ export default {
       if (!this.isMobile()) {
         this.showControls = false;
       }
+    },
+    getLoadingMessage () {
+         return loadingMessage
     },
   },
   computed: {

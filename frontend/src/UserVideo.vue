@@ -16,7 +16,7 @@
 
 <script>
 
-import {hasLength, isFullscreen} from "@/utils";
+import {hasLength, isFullscreen, loadingMessage} from "@/utils";
 import axios from "axios";
 import {mapStores} from "pinia";
 import {useChatStore} from "@/store/chatStore";
@@ -32,7 +32,6 @@ export default {
     ],
 
     data()  {
-      const loadingMessage = 'Loading...';
 	    return {
             userName: loadingMessage,
             audioMute: true,
