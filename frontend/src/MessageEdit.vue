@@ -190,15 +190,15 @@
     import debounce from "lodash/debounce";
     import Tiptap from './TipTapEditor.vue'
     import {
-        chatEditMessageDtoFactory,
-        colorBackground,
-        colorText,
-        embed, getAnswerPreviewFields, getEmbed, setEmbed,
-        hasLength, haveEmbed, isChatRoute,
-        link_dialog_type_add_link_to_text,
-        link_dialog_type_add_media_embed, media_audio,
-        media_image,
-        media_video, new_message, reply_message,
+      chatEditMessageDtoFactory,
+      colorBackground,
+      colorText,
+      embed, getAnswerPreviewFields, getEmbed, setEmbed,
+      hasLength, haveEmbed, isChatRoute,
+      link_dialog_type_add_link_to_text,
+      link_dialog_type_add_media_embed, media_audio,
+      media_image,
+      media_video, new_message, reply_message, isMobileWidth,
     } from "@/utils";
     import {
         getStoredChatEditMessageDto, getStoredChatEditMessageDtoOrNull, getStoredMessageEditSendButtonsType,
@@ -634,7 +634,7 @@
                 switch (type) { // see MessageEditSettingsModalContent
                     case 'auto':
                         const width = this.targetElement?.offsetWidth;
-                        this.chatStore.shouldShowSendMessageButtons = this.isMobile() ? true : (width > 600);
+                        this.chatStore.shouldShowSendMessageButtons = this.isMobile() ? true : !isMobileWidth(width);
                         break;
                     case 'full':
                         this.chatStore.shouldShowSendMessageButtons = true;
