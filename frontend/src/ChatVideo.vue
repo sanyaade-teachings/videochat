@@ -1,6 +1,6 @@
 <template>
-      <splitpanes ref="splVideo" class="default-theme" :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal" @mouseenter="onMouseEnter()" @mouseleave="onMouseLeave()">
-          <pane size="80" v-if="shouldShowPresenter">
+      <splitpanes ref="splVideo" class="default-theme" :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal" @resize="onPanelResized($event)" @pane-add="onPanelAdd($event)" @pane-remove="onPanelRemove($event)" @mouseenter="onMouseEnter()" @mouseleave="onMouseLeave()">
+          <pane v-if="shouldShowPresenter" :size="presenterPaneSize()">
               <div class="video-presenter-container-element">
                   <video v-show="!presenterVideoMute || !presenterAvatarIsSet" @click.stop.prevent="onClick()" class="video-presenter-element" ref="presenterRef"/>
                   <img v-show="presenterAvatarIsSet && presenterVideoMute" @click.stop.prevent="onClick()" class="video-presenter-element" :src="presenterData?.avatar"/>
@@ -9,7 +9,7 @@
                   <VideoButtons @requestFullScreen="onButtonsFullscreen" v-show="showControls"/>
               </div>
           </pane>
-          <pane :class="paneVideoContainerClass" @click.stop.prevent="onClick()">
+          <pane :class="paneVideoContainerClass" @click.stop.prevent="onClick()" :size="miniaturesPaneSize()">
               <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"></v-col>
               <VideoButtons v-if="!shouldShowPresenter" @requestFullScreen="onButtonsFullscreen" v-show="showControls"/>
           </pane>
@@ -68,6 +68,14 @@ const last = 'last';
 const classVideoComponentWrapperPositionHorizontal = 'video-component-wrapper-position-horizontal';
 const classVideoComponentWrapperPositionVertical = 'video-component-wrapper-position-vertical';
 const classVideoComponentWrapperPositionGallery = 'video-component-wrapper-position-gallery';
+
+const panelSizesKey = "videoPanelSizes";
+
+const emptyStoredPanes = () => {
+  return {
+    presenterPane: 80
+  }
+}
 
 export default {
   mixins: [
@@ -759,6 +767,65 @@ export default {
     },
     onClick() {
       this.showControls =! this.showControls
+    },
+
+    presenterPaneSize() {
+      return this.getStored().presenterPane;
+    },
+    miniaturesPaneSize() {
+      if (this.shouldShowPresenter) {
+        return 100 - this.presenterPaneSize();
+      } else {
+        return 100;
+      }
+    },
+
+    prepareForStore() {
+      const ret = this.getStored();
+
+      const paneSizes = this.$refs.splVideo.panes.map(i => i.size);
+      if (this.shouldShowPresenter) {
+        ret.presenterPane = paneSizes[0];
+      } else {
+        ret.presenterPane = 0;
+      }
+      return ret
+    },
+    // returns json with sizes from localstore
+    getStored() {
+      const mbItem = localStorage.getItem(panelSizesKey);
+      if (!mbItem) {
+        return emptyStoredPanes();
+      } else {
+        return JSON.parse(mbItem);
+      }
+    },
+    saveToStored(obj) {
+      localStorage.setItem(panelSizesKey, JSON.stringify(obj));
+    },
+    onPanelResized() {
+      this.$nextTick(() => {
+        this.saveToStored(this.prepareForStore());
+      })
+    },
+    onPanelAdd() {
+      this.$nextTick(() => {
+        const stored = this.getStored();
+        this.restorePanelsSize(stored);
+      })
+    },
+    onPanelRemove() {
+      this.$nextTick(() => {
+        const stored = this.getStored();
+        this.restorePanelsSize(stored);
+      })
+    },
+    restorePanelsSize(ret) {
+      if (this.shouldShowPresenter) {
+        this.$refs.splVideo.panes[0].size = ret.presenterPane;
+      } else {
+        this.$refs.splVideo.panes[0].size = 100;
+      }
     },
   },
   computed: {

@@ -4,7 +4,7 @@
         <ChatList :embedded="true" v-if="isAllowedChatList()" ref="chatListRef"/>
       </pane>
 
-      <pane style="background: white">
+      <pane style="background: white" :size="centralPaneSize()">
         <splitpanes ref="splCentral" class="default-theme" :dbl-click-splitter="false" horizontal @resize="onPanelResized($event)" @pane-add="onPanelAdd($event)" @pane-remove="onPanelRemove($event)">
           <pane :class="messageListPaneClass()">
             <v-tooltip
@@ -37,8 +37,8 @@
         </splitpanes>
       </pane>
 
-      <pane v-if="isAllowedVideo()" size="60">
-        <ChatVideo v-if="chatDtoIsReady" :chatId="chatId" ref="chatVideoRef" @resize="onPanelResized($event)" @pane-add="onPanelAdd($event)" @pane-remove="onPanelRemove($event)"/>
+      <pane v-if="showRightPane()" :size="rightPaneSize()">
+        <ChatVideo v-if="chatDtoIsReady" :chatId="chatId" ref="chatVideoRef"/>
       </pane>
 
     </splitpanes>
@@ -107,8 +107,7 @@ const panelSizesKey = "panelSizes";
 const emptyStoredPanes = () => {
   return {
     leftPane: 20, // ChatList
-    rightPane: 40, // ChatVideo in case videoIsAtSide()
-    topPane: 30, // ChatVideo in case videoIsOnTop()
+    rightPane: 40, // ChatVideo
     bottomPane: 20, // MessageEdit in case desktop (!isMobile())
     bottomPaneBig: 60, // MessageEdit in case desktop (!isMobile()) and a text containing a newline
   }
@@ -608,9 +607,6 @@ export default {
     openNewMessageDialog() { // on mobile OPEN_EDIT_MESSAGE with the null argument
       bus.emit(OPEN_EDIT_MESSAGE, {dto: null, actionType: new_message});
     },
-    shouldShowVideoOnTop() {
-        return this.videoIsHorizontal() && this.isAllowedVideo()
-    },
     messageListPaneClass() {
       const classes = [];
       classes.push('message-pane');
@@ -620,15 +616,12 @@ export default {
       return classes;
     },
 
+    showRightPane() {
+      return this.isAllowedVideo()
+    },
 
     showLeftPane() {
       return this.shouldShowChatList()
-    },
-    showRightPane() {
-      return this.videoIsVertical() && this.isAllowedVideo();
-    },
-    showTopPane() {
-      return this.shouldShowVideoOnTop();
     },
     showBottomPane() {
       return !this.isMobile();
@@ -640,8 +633,14 @@ export default {
     rightPaneSize() {
       return this.getStored().rightPane;
     },
-    topPaneSize() {
-      return this.getStored().topPane;
+    centralPaneSize() {
+      if (this.showRightPane()) {
+        return 100 - this.rightPaneSize();
+      } else if (this.showLeftPane()) {
+        return 100 - this.leftPaneSize();
+      } else {
+        return 100;
+      }
     },
     bottomPaneSize() {
       if (!this.chatStore.isEditingBigText) {
@@ -667,7 +666,7 @@ export default {
     // prepares json to store by extracting concrete panel sizes
     prepareForStore() {
       const outerPaneSizes = this.$refs.splOuter.panes.map(i => i.size);
-      const innerPaneSizes = this.$refs.splInner.panes.map(i => i.size);
+      const centralPaneSizes = this.$refs.splCentral.panes.map(i => i.size);
       const ret = this.getStored();
       if (this.showLeftPane()) {
         ret.leftPane = outerPaneSizes[0];
@@ -675,11 +674,8 @@ export default {
       if (this.showRightPane()) {
         ret.rightPane = outerPaneSizes[outerPaneSizes.length - 1]
       }
-      if (this.showTopPane()) {
-        ret.topPane = innerPaneSizes[0]
-      }
       if (this.showBottomPane()) {
-        const bottomPaneSize = innerPaneSizes[innerPaneSizes.length - 1];
+        const bottomPaneSize = centralPaneSizes[centralPaneSizes.length - 1];
         if (!this.chatStore.isEditingBigText) {
           ret.bottomPane = bottomPaneSize;
         } else {
@@ -698,9 +694,6 @@ export default {
       if (this.showRightPane()) {
         this.$refs.splOuter.panes[this.$refs.splOuter.panes.length - 1].size = ret.rightPane;
       }
-      if (this.showTopPane()) {
-        this.$refs.splInner.panes[0].size = ret.topPane;
-      }
       if (this.showBottomPane()) {
         let bottomPaneSize;
         if (!this.chatStore.isEditingBigText) {
@@ -708,36 +701,18 @@ export default {
         } else {
           bottomPaneSize = ret.bottomPaneBig;
         }
-        this.$refs.splInner.panes[this.$refs.splInner.panes.length - 1].size = bottomPaneSize;
+        this.$refs.splCentral.panes[this.$refs.splCentral.panes.length - 1].size = bottomPaneSize;
       }
-      this.setMiddlePane(ret);
-    },
-    setMiddlePane(ret) {
-      // let middleSize = 100; // percents // TODO
-      // let middlePaneIndex = 0;
-      // if (this.showTopPane()) {
-      //   middleSize -= ret.topPane;
-      //   middlePaneIndex = 1;
-      // }
-      // if (this.showBottomPane()) {
-      //   let bottomPaneSize;
-      //   if (!this.chatStore.isEditingBigText) {
-      //     bottomPaneSize = ret.bottomPane;
-      //   } else {
-      //     bottomPaneSize = ret.bottomPaneBig;
-      //   }
-      //   middleSize -= bottomPaneSize;
-      // }
-      // this.$refs.splInner.panes[middlePaneIndex].size = middleSize;
     },
 
     onPanelAdd() {
       this.$refs.chatVideoRef?.recalculateLayout();
+
       // console.debug("On panel add", this.$refs.splOuter.panes);
       this.$nextTick(() => {
-        // const stored = this.getStored(); // TODO
-        // // console.debug("Restoring on add", stored)
-        // this.restorePanelsSize(stored);
+        const stored = this.getStored();
+        // console.debug("Restoring on add", stored)
+        this.restorePanelsSize(stored);
       })
 
     },
@@ -746,18 +721,16 @@ export default {
 
       // console.debug("On panel removed", this.$refs.splOuter.panes);
       this.$nextTick(() => {
-        // const stored = this.getStored(); // TODO
-        // // console.debug("Restoring on remove", stored)
-        // this.restorePanelsSize(stored);
+        const stored = this.getStored();
+        // console.debug("Restoring on remove", stored)
+        this.restorePanelsSize(stored);
       })
     },
     onPanelResized() {
       this.$refs.chatVideoRef?.recalculateLayout();
+
       this.$nextTick(() => {
-        if (this.$refs.chatVideoRef) {
-          console.warn(this.$refs.chatVideoRef.$refs.splVideo.panes)
-        }
-        // this.saveToStored(this.prepareForStore()); // TODO
+        this.saveToStored(this.prepareForStore());
       })
     },
     scrollDown () {
@@ -792,12 +765,6 @@ export default {
         }
       }
     },
-    'chatStore.isEditingBigText': {
-      handler: function (newValue, oldValue) {
-        const stored = this.getStored();
-        this.setMiddlePane(stored);
-      }
-    }
   },
   created() {
 
