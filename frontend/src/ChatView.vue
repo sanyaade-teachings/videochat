@@ -5,7 +5,7 @@
       </pane>
 
       <pane style="background: white">
-        <splitpanes class="default-theme" :dbl-click-splitter="false" horizontal>
+        <splitpanes ref="splCentral" class="default-theme" :dbl-click-splitter="false" horizontal @resize="onPanelResized($event)" @pane-add="onPanelAdd($event)" @pane-remove="onPanelRemove($event)">
           <pane :class="messageListPaneClass()">
             <v-tooltip
                 v-if="broadcastMessage"
@@ -38,7 +38,7 @@
       </pane>
 
       <pane v-if="isAllowedVideo()" size="60">
-        <ChatVideo v-if="chatDtoIsReady" :chatId="chatId" ref="chatVideoRef" />
+        <ChatVideo v-if="chatDtoIsReady" :chatId="chatId" ref="chatVideoRef" @resize="onPanelResized($event)" @pane-add="onPanelAdd($event)" @pane-remove="onPanelRemove($event)"/>
       </pane>
 
     </splitpanes>
@@ -754,6 +754,9 @@ export default {
     onPanelResized() {
       this.$refs.chatVideoRef?.recalculateLayout();
       this.$nextTick(() => {
+        if (this.$refs.chatVideoRef) {
+          console.warn(this.$refs.chatVideoRef.$refs.splVideo.panes)
+        }
         // this.saveToStored(this.prepareForStore()); // TODO
       })
     },

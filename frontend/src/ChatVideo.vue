@@ -1,5 +1,5 @@
 <template>
-      <splitpanes :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal" ref="panesContainerRef" @mouseenter="onMouseEnter()" @mouseleave="onMouseLeave()">
+      <splitpanes ref="splVideo" class="default-theme" :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal" @mouseenter="onMouseEnter()" @mouseleave="onMouseLeave()">
           <pane size="80" v-if="shouldShowPresenter">
               <div class="video-presenter-container-element">
                   <video v-show="!presenterVideoMute || !presenterAvatarIsSet" @click.stop.prevent="onClick()" class="video-presenter-element" ref="presenterRef"/>
@@ -736,7 +736,7 @@ export default {
       }
     },
     onButtonsFullscreen() {
-      const elem = this.$refs.panesContainerRef?.$el;
+      const elem = this.$refs.splVideo?.$el;
 
       if (elem && isFullscreen()) {
         document.exitFullscreen();
