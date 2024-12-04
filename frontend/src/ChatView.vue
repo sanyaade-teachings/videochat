@@ -6,7 +6,7 @@
 
       <pane style="background: white" :size="centralPaneSize()">
         <splitpanes ref="splCentral" class="default-theme" :dbl-click-splitter="false" horizontal @resize="onPanelResized($event)" @pane-add="onPanelAdd($event)" @pane-remove="onPanelRemove($event)">
-          <pane :class="messageListPaneClass()">
+          <pane :class="messageListPaneClass()" :size="messageListPaneSize()">
             <v-tooltip
                 v-if="broadcastMessage"
                 :model-value="showTooltip"
@@ -647,6 +647,13 @@ export default {
         return this.getStored().bottomPane;
       } else {
         return this.getStored().bottomPaneBig;
+      }
+    },
+    messageListPaneSize() {
+      if (this.showBottomPane()) {
+        return 100 - this.bottomPaneSize()
+      } else {
+        return 100
       }
     },
 
