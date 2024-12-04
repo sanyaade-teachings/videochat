@@ -16,15 +16,11 @@
 
 <script>
 
-import {hasLength} from "@/utils";
+import {hasLength, isFullscreen} from "@/utils";
 import axios from "axios";
 import {mapStores} from "pinia";
 import {useChatStore} from "@/store/chatStore";
 import videoPositionMixin from "@/mixins/videoPositionMixin.js";
-
-function isFullscreen(){
-    return !!(document.fullscreenElement)
-}
 
 export default {
 	  name: 'UserVideo',

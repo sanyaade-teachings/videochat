@@ -1,15 +1,15 @@
 <template>
-      <splitpanes :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal">
+      <splitpanes :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal" ref="panesContainerRef">
           <pane size="80" v-if="shouldShowPresenter">
               <div class="video-presenter-container-element">
                   <video v-show="!presenterVideoMute || !presenterAvatarIsSet" class="video-presenter-element" ref="presenterRef"/>
                   <img v-show="presenterAvatarIsSet && presenterVideoMute" class="video-presenter-element" :src="presenterAvatar"/>
-                  <VideoButtons/>
+                  <VideoButtons @requestFullScreen="onButtonsFullscreen"/>
               </div>
           </pane>
           <pane class="pane-videos">
               <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"></v-col>
-              <VideoButtons v-if="!shouldShowPresenter"/>
+              <VideoButtons v-if="!shouldShowPresenter" @requestFullScreen="onButtonsFullscreen"/>
           </pane>
       </splitpanes>
 </template>
@@ -30,7 +30,7 @@ import axios from "axios";
 import { retry } from '@lifeomic/attempt';
 import {
   defaultAudioMute,
-  getWebsocketUrlPrefix, hasLength, isMobileBrowser, PURPOSE_CALL
+  getWebsocketUrlPrefix, hasLength, isFullscreen, isMobileBrowser, PURPOSE_CALL
 } from "@/utils";
 import {
   getStoredAudioDevicePresents, getStoredCallAudioDeviceId, getStoredCallVideoDeviceId,
@@ -707,6 +707,15 @@ export default {
           gallery.style.setProperty("--height", r.height + "px");
           gallery.style.setProperty("--cols", r.cols + "");
         }
+      }
+    },
+    onButtonsFullscreen() {
+      const elem = this.$refs.panesContainerRef?.$el;
+
+      if (elem && isFullscreen()) {
+        document.exitFullscreen();
+      } else {
+        elem.requestFullscreen();
       }
     },
   },

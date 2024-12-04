@@ -27,7 +27,7 @@ export default {
       this.chatStore.localVideo = requestedState
     },
     onEnterFullscreen(e) {
-      // TODO emit
+      this.$emit("requestFullScreen");
     },
   }
 }

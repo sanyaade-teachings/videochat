@@ -407,6 +407,7 @@ export const unescapeHtml = (text) => {
     return he.decode(text);
 }
 
+<<<<<<< HEAD
 export const getExtendedUserFragment = (reqEmail) => {
     const email = `
 email,
@@ -447,3 +448,8 @@ awaitingForConfirmEmailChange,
 }
 `
 }
+=======
+export const isFullscreen = () => {
+    return !!(document.fullscreenElement)
+}
+>>>>>>> f6545800 (fullscreen)
