@@ -27,7 +27,7 @@
             <template v-if="showSearchButton || !isMobile()">
                 <v-badge
                          :content="chatStore.videoChatUsersCount"
-                         :model-value="!!chatStore.videoChatUsersCount"
+                         :model-value="showVideoBadge"
                          color="green"
                          overlap
                          offset-y="1.8em"
@@ -255,6 +255,7 @@ import {createBrowserNotificationIfPermitted, removeBrowserNotification} from "@
 import {getHumanReadableDate} from "@/date.js";
 import onFocusMixin from "@/mixins/onFocusMixin.js";
 import SetPasswordModal from "@/SetPasswordModal.vue";
+import debounce from "lodash/debounce.js";
 
 const audio = new Audio(`${prefix}/call.mp3`);
 
@@ -277,6 +278,8 @@ export default {
 
             globalEventsSubscription: null,
             selfProfileEventsSubscription: null,
+            showNotificationBadge: false,
+            showVideoBadge: false,
         }
     },
     computed: {
@@ -298,9 +301,6 @@ export default {
         },
         notificationsCount() {
             return this.chatStore.notificationsCount
-        },
-        showNotificationBadge() {
-            return this.notificationsCount != 0 && !this.chatStore.showDrawer
         },
         shouldShowFileUpload() {
             return !!this.chatStore.fileUploadingQueue.length
@@ -786,7 +786,13 @@ export default {
         onEditUser(u) {
           this.chatStore.currentUser = u;
         },
-
+        updateNotificationBadgeDebounced() {
+          this.showNotificationBadge = this.chatStore.notificationsCount != 0 && !this.chatStore.showDrawer
+        },
+        // debounce fixes a dangling badge with 0 value
+        updateVideoBadgeDebounced() {
+          this.showVideoBadge = !!this.chatStore.videoChatUsersCount
+        },
     },
     components: {
         ChooseColorModal,
@@ -814,8 +820,28 @@ export default {
         PublishedMessagesModal,
         SetPasswordModal,
     },
+    watch: {
+      'chatStore.notificationsCount': {
+        handler: function (newValue, oldValue) {
+            this.updateNotificationBadgeDebounced()
+        }
+      },
+      'chatStore.showDrawer': {
+        handler: function (newValue, oldValue) {
+          this.updateNotificationBadgeDebounced()
+        }
+      },
+      'chatStore.videoChatUsersCount': {
+        handler: function (newValue, oldValue) {
+          this.updateVideoBadgeDebounced()
+        }
+      },
+    },
+
     created() {
         this.afterRouteInitialized = once(this.afterRouteInitialized);
+        this.updateNotificationBadgeDebounced = debounce(this.updateNotificationBadgeDebounced, 1000);
+        this.updateVideoBadgeDebounced = debounce(this.updateVideoBadgeDebounced, 1000)
     },
     mounted() {
         window.addEventListener("resize", this.onWindowResized);
