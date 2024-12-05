@@ -322,5 +322,6 @@ export default {
     queue_broker: "Queue broker",
     database: "Database",
     set_password: "Set password",
-    video_presenter_enable: "Enable presenter"
+    video_presenter_enable: "Enable presenter",
+    close_video: "Close video"
 }

@@ -239,7 +239,6 @@ export default {
     },
     // TODO на пульт red tube (end call), share screen, add a source, для админа чата - "замьютить всех кроме меня", presenter = [on, off], videoPosition = [...] - открывается менюшка, messages = [on, off]
     // TODO если пользак кликнул по элементу UserVideo, то его выбирать (override в Presenter) (pinning) - среди кнопок UserVideo вместо fullscreen, а фуллскрин убрать
-    // TODO сделать вид для мобилки и сохранение его позиций
     // TODO think how to reuse the presenter mode with egress
     // TODO выбрать side + presenter по дефолту на десктопе, НО НЕ на мобилке
     detachPresenter() {

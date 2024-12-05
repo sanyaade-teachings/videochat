@@ -322,5 +322,6 @@ export default {
     queue_broker: "Брокер очередей",
     database: "База данных",
     set_password: "Задать пароль",
-    video_presenter_enable: "Включить презентатор"
+    video_presenter_enable: "Включить презентатор",
+    close_video: "Закрыть видео"
 }

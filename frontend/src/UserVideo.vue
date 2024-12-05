@@ -1,27 +1,41 @@
 <template>
-    <div :class="videoContainerElementClass" ref="containerRef" @mouseenter="onMouseEnter()" @mouseleave="onMouseLeave()">
-        <div class="video-container-element-control" v-show="showControls">
-            <v-btn variant="plain" icon v-if="isLocal && audioPublication != null" @click="doMuteAudio(!audioMute)" :title="audioMute ? $vuetify.locale.t('$vuetify.unmute_audio') : $vuetify.locale.t('$vuetify.mute_audio')"><v-icon size="x-large" class="video-container-element-control-item">{{ audioMute ? 'mdi-microphone-off' : 'mdi-microphone' }}</v-icon></v-btn>
-            <v-btn variant="plain" icon v-if="isLocal && videoPublication != null" @click="doMuteVideo(!videoMute)" :title="videoMute ? $vuetify.locale.t('$vuetify.unmute_video') : $vuetify.locale.t('$vuetify.mute_video')"><v-icon size="x-large" class="video-container-element-control-item">{{ videoMute ? 'mdi-video-off' : 'mdi-video' }} </v-icon></v-btn>
-            <v-btn variant="plain" icon @click="onEnterFullscreen" :title="$vuetify.locale.t('$vuetify.fullscreen')"><v-icon size="x-large" class="video-container-element-control-item">mdi-arrow-expand-all</v-icon></v-btn>
-            <v-btn variant="plain" icon v-if="isLocal" @click="onClose()" :title="$vuetify.locale.t('$vuetify.close')"><v-icon size="x-large" class="video-container-element-control-item">mdi-close</v-icon></v-btn>
-            <v-btn variant="plain" icon v-if="!isLocal && canVideoKick" @click="kickRemote()" :title="$vuetify.locale.t('$vuetify.kick')"><v-icon size="x-large" class="video-container-element-control-item">mdi-block-helper</v-icon></v-btn>
-            <v-btn variant="plain" icon v-if="!isLocal && canAudioMute" @click="forceMuteRemote()" :title="$vuetify.locale.t('$vuetify.force_mute')"><v-icon size="x-large" class="video-container-element-control-item">mdi-microphone-off</v-icon></v-btn>
+    <div :class="videoContainerElementClass" ref="containerRef" @mouseenter="onMouseEnter()" @mouseleave="onMouseLeave()" @contextmenu.stop="onShowContextMenu($event, this)">
+        <div class="video-container-element-control" v-show="showControls && !this.isMobile()">
+            <v-btn variant="plain" icon v-if="shouldShowMuteAudio()" @click="doMuteAudio(!audioMute)" :title="audioMute ? $vuetify.locale.t('$vuetify.unmute_audio') : $vuetify.locale.t('$vuetify.mute_audio')"><v-icon size="x-large" class="video-container-element-control-item">{{ audioMute ? 'mdi-microphone-off' : 'mdi-microphone' }}</v-icon></v-btn>
+            <v-btn variant="plain" icon v-if="shouldShowMuteVideo()" @click="doMuteVideo(!videoMute)" :title="videoMute ? $vuetify.locale.t('$vuetify.unmute_video') : $vuetify.locale.t('$vuetify.mute_video')"><v-icon size="x-large" class="video-container-element-control-item">{{ videoMute ? 'mdi-video-off' : 'mdi-video' }} </v-icon></v-btn>
+            <v-btn variant="plain" icon v-if="shouldShowClose()" @click="onClose()" :title="$vuetify.locale.t('$vuetify.close_video')"><v-icon size="x-large" class="video-container-element-control-item">mdi-close</v-icon></v-btn>
+            <v-btn variant="plain" icon v-if="shouldShowVideoKick()" @click="kickRemote()" :title="$vuetify.locale.t('$vuetify.kick')"><v-icon size="x-large" class="video-container-element-control-item">mdi-block-helper</v-icon></v-btn>
+            <v-btn variant="plain" icon v-if="shouldShowAudioMute()" @click="forceMuteRemote()" :title="$vuetify.locale.t('$vuetify.force_mute')"><v-icon size="x-large" class="video-container-element-control-item">mdi-microphone-off</v-icon></v-btn>
         </div>
         <img v-show="avatarIsSet && videoMute" @click="onClick" :class="videoElementClass" :src="avatar"/>
         <video v-show="!videoMute || !avatarIsSet" @click="onClick" :class="videoElementClass" :id="id" autoPlay playsInline ref="videoRef"/>
         <p v-bind:class="[speaking ? 'video-container-element-caption-speaking' : '', 'video-container-element-caption']">{{ userName }} <v-icon v-if="audioMute">mdi-microphone-off</v-icon></p>
+
+        <UserVideoContextMenu
+            ref="contextMenuRef"
+            isLocal="isLocal"
+            :shouldShowMuteAudio="shouldShowMuteAudio()"
+            :shouldShowMuteVideo="shouldShowMuteVideo()"
+            :shouldShowClose="shouldShowClose()"
+            :shouldShowVideoKick="shouldShowVideoKick()"
+            :shouldShowAudioMute="shouldShowAudioMute()"
+            :audioMute="audioMute"
+            :videoMute="videoMute"
+        >
+        </UserVideoContextMenu>
+
     </div>
 </template>
 
 <script>
 
-import {hasLength, isFullscreen, loadingMessage} from "@/utils";
+import {hasLength, loadingMessage} from "@/utils";
 import axios from "axios";
 import {mapStores} from "pinia";
 import {useChatStore} from "@/store/chatStore";
 import videoPositionMixin from "@/mixins/videoPositionMixin.js";
 import speakingMixin from "@/mixins/speakingMixin.js";
+import UserVideoContextMenu from "@/UserVideoContextMenu.vue";
 
 export default {
 	  name: 'UserVideo',
@@ -30,6 +44,10 @@ export default {
         videoPositionMixin(),
         speakingMixin(),
     ],
+
+    components: {
+      UserVideoContextMenu,
+    },
 
     data()  {
 	    return {
@@ -105,15 +123,6 @@ export default {
                 this.chatStore.localMicrophone = !newState
             }
         },
-        onEnterFullscreen(e) {
-            const elem = this.$refs.containerRef;
-
-            if (isFullscreen()) {
-                document.exitFullscreen();
-            } else {
-                elem.requestFullscreen();
-            }
-        },
         setAvatar(a) {
             this.avatar = a;
         },
@@ -180,6 +189,25 @@ export default {
             e.stopPropagation()
           }
           this.showControls =! this.showControls
+        },
+        shouldShowMuteAudio() {
+            return this.isLocal && this.audioPublication != null
+        },
+        shouldShowMuteVideo() {
+            return this.isLocal && this.videoPublication != null
+        },
+        shouldShowClose() {
+            return this.isLocal
+        },
+        shouldShowVideoKick() {
+            return !this.isLocal && this.canVideoKick
+        },
+        shouldShowAudioMute() {
+            return !this.isLocal && this.canAudioMute
+        },
+
+        onShowContextMenu(e, menuableItem) {
+          this.$refs.contextMenuRef.onShowContextMenu(e, menuableItem);
         },
     },
     computed: {
