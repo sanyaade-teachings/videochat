@@ -67,12 +67,8 @@
                 return profile + "/" + item.owner?.id;
             },
             onProfileClick(item) {
-                if (this.isCompact) {
-                    window.location.href = this.getOwnerLink(item);
-                } else {
-                    const route = this.getOwnerRoute(item);
-                    this.$router.push(route);
-                }
+                const route = this.getOwnerRoute(item);
+                this.$router.push(route);
             },
             onMessageClick(event, dto) {
                 if (this.isMobile()) {
