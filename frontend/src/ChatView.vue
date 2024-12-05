@@ -6,6 +6,10 @@
 
       <pane style="background: white" :size="centralPaneSize()">
         <splitpanes ref="splCentral" class="default-theme" :dbl-click-splitter="false" horizontal @resize="onPanelResized($event)" @pane-add="onPanelAdd($event)" @pane-remove="onPanelRemove($event)">
+          <pane v-if="showTopPane()" :size="topPaneSize()">
+            <ChatVideo v-if="chatDtoIsReady" :chatId="chatId" ref="chatVideoRef"/>
+          </pane>
+
           <pane :class="messageListPaneClass()" :size="messageListPaneSize()">
             <v-tooltip
                 v-if="broadcastMessage"
@@ -106,8 +110,9 @@ const panelSizesKey = "panelSizes";
 
 const emptyStoredPanes = () => {
   return {
+    topPane: 40, // ChatVideo mobile
     leftPane: 20, // ChatList
-    rightPane: 40, // ChatVideo
+    rightPane: 40, // ChatVideo desktop
     bottomPane: 20, // MessageEdit in case desktop (!isMobile())
     bottomPaneBig: 60, // MessageEdit in case desktop (!isMobile()) and a text containing a newline
   }
@@ -617,7 +622,7 @@ export default {
     },
 
     showRightPane() {
-      return this.isAllowedVideo()
+      return !this.isMobile() && this.isAllowedVideo()
     },
 
     showLeftPane() {
@@ -633,13 +638,23 @@ export default {
     rightPaneSize() {
       return this.getStored().rightPane;
     },
+    showTopPane() {
+      return this.isMobile() && this.isAllowedVideo()
+    },
+    topPaneSize() {
+      return this.getStored().topPane;
+    },
     centralPaneSize() {
-      if (this.showRightPane()) {
-        return 100 - this.rightPaneSize();
-      } else if (this.showLeftPane()) {
-        return 100 - this.leftPaneSize();
+      if (this.isMobile()) {
+        return 100
       } else {
-        return 100;
+        if (this.showRightPane()) {
+          return 100 - this.rightPaneSize();
+        } else if (this.showLeftPane()) {
+          return 100 - this.leftPaneSize();
+        } else {
+          return 100;
+        }
       }
     },
     bottomPaneSize() {
@@ -650,10 +665,18 @@ export default {
       }
     },
     messageListPaneSize() {
-      if (this.showBottomPane()) {
-        return 100 - this.bottomPaneSize()
+      if (this.isMobile()) {
+        if (this.showTopPane()) {
+          return 100 - this.topPaneSize();
+        } else {
+          return 100;
+        }
       } else {
-        return 100
+        if (this.showBottomPane()) {
+          return 100 - this.bottomPaneSize()
+        } else {
+          return 100
+        }
       }
     },
 
@@ -675,18 +698,25 @@ export default {
       const outerPaneSizes = this.$refs.splOuter.panes.map(i => i.size);
       const centralPaneSizes = this.$refs.splCentral.panes.map(i => i.size);
       const ret = this.getStored();
-      if (this.showLeftPane()) {
-        ret.leftPane = outerPaneSizes[0];
-      }
-      if (this.showRightPane()) {
-        ret.rightPane = outerPaneSizes[outerPaneSizes.length - 1]
-      }
-      if (this.showBottomPane()) {
-        const bottomPaneSize = centralPaneSizes[centralPaneSizes.length - 1];
-        if (!this.chatStore.isEditingBigText) {
-          ret.bottomPane = bottomPaneSize;
-        } else {
-          ret.bottomPaneBig = bottomPaneSize;
+      if (this.isMobile()) {
+        if (this.showTopPane()) {
+          const topPaneSize = centralPaneSizes[0];
+          ret.topPane = topPaneSize;
+        }
+      } else {
+        if (this.showLeftPane()) {
+          ret.leftPane = outerPaneSizes[0];
+        }
+        if (this.showRightPane()) {
+          ret.rightPane = outerPaneSizes[outerPaneSizes.length - 1]
+        }
+        if (this.showBottomPane()) {
+          const bottomPaneSize = centralPaneSizes[centralPaneSizes.length - 1];
+          if (!this.chatStore.isEditingBigText) {
+            ret.bottomPane = bottomPaneSize;
+          } else {
+            ret.bottomPaneBig = bottomPaneSize;
+          }
         }
       }
       // console.debug("Preparing for store", ret)
@@ -695,20 +725,26 @@ export default {
     // sets concrete panel sizes
     restorePanelsSize(ret) {
       // console.debug("Restoring from", ret);
-      if (this.showLeftPane()) {
-        this.$refs.splOuter.panes[0].size = ret.leftPane;
-      }
-      if (this.showRightPane()) {
-        this.$refs.splOuter.panes[this.$refs.splOuter.panes.length - 1].size = ret.rightPane;
-      }
-      if (this.showBottomPane()) {
-        let bottomPaneSize;
-        if (!this.chatStore.isEditingBigText) {
-          bottomPaneSize = ret.bottomPane;
-        } else {
-          bottomPaneSize = ret.bottomPaneBig;
+      if (this.isMobile()) {
+        if (this.showTopPane()) {
+          this.$refs.splCentral.panes[0].size = ret.topPane;
         }
-        this.$refs.splCentral.panes[this.$refs.splCentral.panes.length - 1].size = bottomPaneSize;
+      } else {
+        if (this.showLeftPane()) {
+          this.$refs.splOuter.panes[0].size = ret.leftPane;
+        }
+        if (this.showRightPane()) {
+          this.$refs.splOuter.panes[this.$refs.splOuter.panes.length - 1].size = ret.rightPane;
+        }
+        if (this.showBottomPane()) {
+          let bottomPaneSize;
+          if (!this.chatStore.isEditingBigText) {
+            bottomPaneSize = ret.bottomPane;
+          } else {
+            bottomPaneSize = ret.bottomPaneBig;
+          }
+          this.$refs.splCentral.panes[this.$refs.splCentral.panes.length - 1].size = bottomPaneSize;
+        }
       }
     },
 
