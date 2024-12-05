@@ -175,7 +175,7 @@ import {
   hasLength,
   isCalling,
   isChatRoute,
-  setLanguageToVuetify
+  setLanguageToVuetify, stopCall
 } from "@/utils";
 import {
     chat_list_name,
@@ -339,10 +339,7 @@ export default {
             goToPreservingQuery(this.$route, this.$router, routerNewState);
         },
         stopCall() {
-            console.debug("stopping Call");
-            this.chatStore.leavingVideoAcceptableParam = true;
-            const routerNewState = { name: chat_name };
-            goToPreservingQuery(this.$route, this.$router, routerNewState);
+          stopCall(this.chatStore, this.$route, this.$router);
         },
 
         onProfileSet(){

@@ -9,6 +9,7 @@ import {
     videochat_name
 } from "@/router/routes";
 import he from "he";
+import {goToPreservingQuery} from "@/mixins/searchString.js";
 
 export const isMobileBrowser = () => {
     return navigator.userAgent.indexOf('Mobile') !== -1
@@ -453,3 +454,9 @@ export const isFullscreen = () => {
 }
 
 export const loadingMessage = 'Loading...';
+
+export const stopCall = (chatStore, route, router) => {
+    chatStore.leavingVideoAcceptableParam = true;
+    const routerNewState = { name: chat_name };
+    goToPreservingQuery(route, router, routerNewState);
+}
