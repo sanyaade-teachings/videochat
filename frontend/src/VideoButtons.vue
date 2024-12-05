@@ -1,14 +1,14 @@
 <template>
   <div :class="videoButtonsControlClass">
     <template v-if="chatStore.showCallManagement && chatStore.isInCall()">
-      <v-btn variant="plain" icon :loading="chatStore.initializingVideoCall" @click="stopCall()" :title="$vuetify.locale.t('$vuetify.leave_call')">
+      <v-btn variant="plain" icon :loading="chatStore.initializingVideoCall" @click.stop.prevent="stopCall()" :title="$vuetify.locale.t('$vuetify.leave_call')">
         <v-icon size="x-large" :class="chatStore.shouldPhoneBlink ? 'call-blink' : 'text-red'">mdi-phone</v-icon>
       </v-btn>
     </template>
     <v-btn variant="plain" icon v-if="chatStore.canShowMicrophoneButton" @click.stop.prevent="doMuteAudio(!chatStore.localMicrophone)" :title="!chatStore.localMicrophone ? $vuetify.locale.t('$vuetify.unmute_audio') : $vuetify.locale.t('$vuetify.mute_audio')"><v-icon size="x-large">{{ !chatStore.localMicrophone ? 'mdi-microphone-off' : 'mdi-microphone' }}</v-icon></v-btn>
     <v-btn variant="plain" icon v-if="chatStore.canShowVideoButton" @click.stop.prevent="doMuteVideo(!chatStore.localVideo)" :title="!chatStore.localVideo ? $vuetify.locale.t('$vuetify.unmute_video') : $vuetify.locale.t('$vuetify.mute_video')"><v-icon size="x-large">{{ !chatStore.localVideo ? 'mdi-video-off' : 'mdi-video' }} </v-icon></v-btn>
     <template v-if="!isMobile()">
-      <v-btn variant="plain" icon @click="addScreenSource()" :title="$vuetify.locale.t('$vuetify.screen_share')">
+      <v-btn variant="plain" icon @click.stop.prevent="addScreenSource()" :title="$vuetify.locale.t('$vuetify.screen_share')">
         <v-icon size="x-large">mdi-monitor-screenshot</v-icon>
       </v-btn>
     </template>
