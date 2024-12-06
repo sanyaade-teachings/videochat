@@ -1008,6 +1008,12 @@ div .stop-scrolling {
   white-space: nowrap;
 }
 
+@media screen and (max-width: $mobileWidth) {
+  .inline-caption-base {
+    font-size 0.6em
+  }
+}
+
 </style>
 
 <style lang="stylus" scoped>
