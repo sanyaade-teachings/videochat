@@ -992,6 +992,22 @@ div .stop-scrolling {
     overflow: hidden !important;
 }
 
+.inline-caption-base {
+  z-index 2
+  display inherit
+  margin: 0;
+  left 0.4em
+  bottom 0.4em
+  position: absolute
+  background rgba(255, 255, 255, 0.65)
+  padding-left 0.3em
+  padding-right 0.3em
+  border-radius 4px
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 </style>
 
 <style lang="stylus" scoped>

@@ -4,7 +4,7 @@
               <div class="video-presenter-container-element">
                   <video v-show="!presenterVideoMute || !presenterAvatarIsSet" @click.stop.prevent="onClick()" class="video-presenter-element" ref="presenterRef"/>
                   <img v-show="presenterAvatarIsSet && presenterVideoMute" @click.stop.prevent="onClick()" class="video-presenter-element" :src="presenterData?.avatar"/>
-                  <p v-bind:class="[speaking ? 'presenter-element-caption-speaking' : '', 'presenter-element-caption']">{{ presenterData?.userName ? presenterData?.userName : getLoadingMessage() }} <v-icon v-if="presenterAudioMute">mdi-microphone-off</v-icon></p>
+                  <p v-bind:class="[speaking ? 'presenter-element-caption-speaking' : '', 'presenter-element-caption', 'inline-caption-base']">{{ presenterData?.userName ? presenterData?.userName : getLoadingMessage() }} <v-icon v-if="presenterAudioMute">mdi-microphone-off</v-icon></p>
 
                   <VideoButtons @requestFullScreen="onButtonsFullscreen" v-show="showControls"/>
               </div>
@@ -1085,22 +1085,7 @@ export default {
 }
 
 .presenter-element-caption {
-  z-index 2
-  display inherit
-  margin: 0;
-  left 0.4em
-  bottom 0.4em
-  position: absolute
-  background rgba(255, 255, 255, 0.65)
   max-width: calc(100% - 1em) // still needed for thin (vertical) video on mobile - it prevents bulging
-  padding-left 0.3em
-  padding-right 0.3em
-  border-radius 4px
-  //word-wrap: break-word;
-  //overflow-wrap: break-all
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .presenter-element-caption-speaking {

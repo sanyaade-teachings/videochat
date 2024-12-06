@@ -9,7 +9,7 @@
         </div>
         <img v-show="avatarIsSet && videoMute" @click="onClick" :class="videoElementClass" :src="avatar"/>
         <video v-show="!videoMute || !avatarIsSet" @click="onClick" :class="videoElementClass" :id="id" autoPlay playsInline ref="videoRef"/>
-        <p v-bind:class="[speaking ? 'video-container-element-caption-speaking' : '', 'video-container-element-caption']">{{ userName }} <v-icon v-if="audioMute">mdi-microphone-off</v-icon></p>
+        <p v-bind:class="[speaking ? 'video-container-element-caption-speaking' : '', 'video-container-element-caption', 'inline-caption-base']">{{ userName }} <v-icon v-if="audioMute">mdi-microphone-off</v-icon></p>
 
         <UserVideoContextMenu
             ref="contextMenuRef"
@@ -324,22 +324,7 @@ export default {
     }
 
     .video-container-element-caption {
-        z-index 2
-        display inherit
-        margin: 0;
-        left 0.4em
-        bottom 0.4em
-        position: absolute
-        background rgba(255, 255, 255, 0.65)
         max-width: calc(100% - 1em) // still needed for thin (vertical) video on mobile - it prevents bulging
-        padding-left 0.3em
-        padding-right 0.3em
-        border-radius 4px
-        //word-wrap: break-word;
-        //overflow-wrap: break-all
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
 
     .video-container-element-caption-speaking {
