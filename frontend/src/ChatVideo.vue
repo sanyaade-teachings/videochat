@@ -249,8 +249,6 @@ export default {
       }
     },
     updatePresenter(data) {
-      this.detachPresenter();
-
       if (data?.videoStream) {
         data.videoStream.videoTrack?.attach(this.$refs.presenterRef);
         this.presenterData = data;
@@ -338,7 +336,7 @@ export default {
         }
       }
     },
-    electNewPresenterForce() {
+    electNewPresenterCarefully() {
       const data = this.getAnyPrioritizedVideoData();
       if (data) {
         this.updatePresenter(data);
@@ -879,7 +877,13 @@ export default {
           }
           if (this.canUsePresenterPlain(newValue)) {
             this.$nextTick(() => {
-              this.electNewPresenterForce();
+              // test case
+              // disable presenter
+              // switch vertical and horizontal
+              // the local video shouldn't disappear
+
+              // thus because of this this.updatePresenter(data) doesn't have this.detachPresenter()
+              this.electNewPresenterCarefully();
             })
           }
           if (videoIsGallery) {
@@ -895,7 +899,7 @@ export default {
         if (this.videoContainerDiv) {
           if (newValue) {
             this.$nextTick(()=>{ // needed because videoContainerDiv still not visible for attaching from livekit js
-              this.electNewPresenterForce();
+              this.electNewPresenterCarefully();
             })
           } else {
             this.detachPresenter();
