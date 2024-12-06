@@ -106,7 +106,7 @@ export default {
 
 .video-buttons-control-horizontal {
   position: absolute;
-  bottom 10px
+  bottom 16px
   z-index 20
 }
 
