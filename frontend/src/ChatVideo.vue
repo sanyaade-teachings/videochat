@@ -1086,6 +1086,7 @@ export default {
 .pane-videos-horizontal {
   display: flex;
   justify-content: center;
+  position: relative // for mobile
 }
 
 .pane-videos-vertical {

@@ -96,6 +96,7 @@ export default {
 
 
 <style scoped lang="stylus">
+@import "constants.styl"
 
 .video-buttons-control {
   background rgba(255, 255, 255, 0.65)
@@ -116,6 +117,13 @@ export default {
   display: flex;
   flex-direction: column;
   z-index 20
+}
+
+@media screen and (max-width: $mobileWidth) {
+  .video-buttons-control-vertical {
+    margin-left: unset;
+    left: 10px;
+  }
 }
 
 </style>
