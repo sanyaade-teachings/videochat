@@ -1,16 +1,16 @@
 <template>
-      <splitpanes ref="splVideo" class="default-theme" :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal" @resize="onPanelResized($event)" @pane-add="onPanelAdd($event)" @pane-remove="onPanelRemove($event)" @mouseenter="onMouseEnter()" @mouseleave="onMouseLeave()">
+      <splitpanes ref="splVideo" class="default-theme" :dbl-click-splitter="false" :horizontal="splitpanesIsHorizontal" @resize="onPanelResized($event)" @pane-add="onPanelAdd($event)" @pane-remove="onPanelRemove($event)">
           <pane v-if="shouldShowPresenter" :size="presenterPaneSize()">
               <div class="video-presenter-container-element">
-                  <video v-show="!presenterVideoMute || !presenterAvatarIsSet" @click.stop.prevent="onClick()" class="video-presenter-element" ref="presenterRef"/>
-                  <img v-show="presenterAvatarIsSet && presenterVideoMute" @click.stop.prevent="onClick()" class="video-presenter-element" :src="presenterData?.avatar"/>
+                  <video v-show="!presenterVideoMute || !presenterAvatarIsSet" @click.self="onClick()" class="video-presenter-element" ref="presenterRef"/>
+                  <img v-show="presenterAvatarIsSet && presenterVideoMute" @click.self="onClick()" class="video-presenter-element" :src="presenterData?.avatar"/>
                   <p v-bind:class="[speaking ? 'presenter-element-caption-speaking' : '', 'presenter-element-caption', 'inline-caption-base']">{{ presenterData?.userName ? presenterData?.userName : getLoadingMessage() }} <v-icon v-if="presenterAudioMute">mdi-microphone-off</v-icon></p>
 
                   <VideoButtons @requestFullScreen="onButtonsFullscreen" v-show="showControls"/>
               </div>
           </pane>
-          <pane :class="paneVideoContainerClass" @click.stop.prevent="onClick()" :size="miniaturesPaneSize()">
-              <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"></v-col>
+          <pane :class="paneVideoContainerClass"  :size="miniaturesPaneSize()">
+              <v-col cols="12" class="ma-0 pa-0" id="video-container" :class="videoContainerClass"  @click="onClickFromVideos()"></v-col>
               <VideoButtons v-if="!shouldShowPresenter" @requestFullScreen="onButtonsFullscreen" v-show="showControls"/>
           </pane>
       </splitpanes>
@@ -93,7 +93,7 @@ export default {
       presenterData: null,
       presenterVideoMute: false,
       presenterAudioMute: true,
-      showControls: false,
+      showControls: true,
     }
   },
   methods: {
@@ -768,7 +768,12 @@ export default {
     onClick() {
       this.showControls =! this.showControls
     },
-
+    onClickFromVideos() {
+        if (this.shouldShowPresenter) {
+          return
+        }
+        this.onClick()
+    },
     presenterPaneSize() {
       return this.getStored().presenterPane;
     },

@@ -1,5 +1,5 @@
 <template>
-    <div :class="videoContainerElementClass" ref="containerRef" @mouseenter="onMouseEnter()" @mouseleave="onMouseLeave()" @contextmenu.stop="onShowContextMenu($event, this)">
+    <div :class="videoContainerElementClass" ref="containerRef" @contextmenu.stop="onShowContextMenu($event, this)">
         <div class="video-container-element-control" v-show="showControls && !this.isMobile()">
             <v-btn variant="plain" icon v-if="shouldShowMuteAudio()" @click="doMuteAudio(!audioMute)" :title="audioMute ? $vuetify.locale.t('$vuetify.unmute_audio') : $vuetify.locale.t('$vuetify.mute_audio')"><v-icon size="x-large" class="video-container-element-control-item">{{ audioMute ? 'mdi-microphone-off' : 'mdi-microphone' }}</v-icon></v-btn>
             <v-btn variant="plain" icon v-if="shouldShowMuteVideo()" @click="doMuteVideo(!videoMute)" :title="videoMute ? $vuetify.locale.t('$vuetify.unmute_video') : $vuetify.locale.t('$vuetify.mute_video')"><v-icon size="x-large" class="video-container-element-control-item">{{ videoMute ? 'mdi-video-off' : 'mdi-video' }} </v-icon></v-btn>
@@ -185,9 +185,6 @@ export default {
             axios.put(`/api/video/${this.chatStore.chatDto.id}/mute?userId=${this.userId}`)
         },
         onClick(e) {
-          if (!this.videoIsGallery()) {
-            e.stopPropagation()
-          }
           this.showControls =! this.showControls
         },
         shouldShowMuteAudio() {

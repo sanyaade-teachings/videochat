@@ -13,6 +13,18 @@
       </v-btn>
     </template>
     <v-btn variant="plain" icon @click.stop.prevent="onEnterFullscreen" :title="$vuetify.locale.t('$vuetify.fullscreen')"><v-icon size="x-large">mdi-arrow-expand-all</v-icon></v-btn>
+
+    <v-select
+        :label="$vuetify.locale.t('$vuetify.video_position')"
+        :items="positionItems"
+        density="comfortable"
+        hide-details
+        color="primary"
+        @update:modelValue="changeVideoPosition"
+        v-model="chatStore.videoPosition"
+        variant="underlined"
+    ></v-select>
+
   </div>
 </template>
 
@@ -22,6 +34,12 @@ import {useChatStore} from "@/store/chatStore.js";
 import videoPositionMixin from "@/mixins/videoPositionMixin.js";
 import {stopCall} from "@/utils.js";
 import bus, {ADD_SCREEN_SOURCE} from "@/bus/bus.js";
+import {
+  setStoredVideoPosition,
+  VIDEO_POSITION_AUTO, VIDEO_POSITION_GALLERY,
+  VIDEO_POSITION_HORIZONTAL,
+  VIDEO_POSITION_VERTICAL
+} from "@/store/localStore.js";
 
 export default {
   mixins: [
@@ -46,7 +64,10 @@ export default {
       } else {
         return null;
       }
-    }
+    },
+    positionItems() {
+      return [VIDEO_POSITION_AUTO, VIDEO_POSITION_HORIZONTAL, VIDEO_POSITION_VERTICAL, VIDEO_POSITION_GALLERY]
+    },
   },
   methods: {
     doMuteAudio(requestedState) {
@@ -64,6 +85,10 @@ export default {
     },
     addScreenSource() {
       bus.emit(ADD_SCREEN_SOURCE);
+    },
+    changeVideoPosition(v) {
+      this.chatStore.videoPosition = v;
+      setStoredVideoPosition(v);
     },
   }
 }
