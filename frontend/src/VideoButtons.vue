@@ -15,14 +15,13 @@
     <v-btn variant="plain" icon @click.stop.prevent="onEnterFullscreen" :title="$vuetify.locale.t('$vuetify.fullscreen')"><v-icon size="x-large">mdi-arrow-expand-all</v-icon></v-btn>
 
     <v-select
-        :label="$vuetify.locale.t('$vuetify.video_position')"
+        class="video-position-select"
         :items="positionItems"
-        density="comfortable"
+        density="compact"
         hide-details
-        color="primary"
         @update:modelValue="changeVideoPosition"
         v-model="chatStore.videoPosition"
-        variant="underlined"
+        variant="plain"
     ></v-select>
 
   </div>
@@ -103,6 +102,7 @@ export default {
   padding-left 0.3em
   padding-right 0.3em
   border-radius 4px
+  display: flex;
 }
 
 .video-buttons-control-horizontal {
@@ -126,4 +126,27 @@ export default {
   }
 }
 
+.video-position-select {
+  margin-top auto
+  margin-bottom auto
+  display: inline-flex
+  align-self: center
+}
+
+</style>
+
+<style lang="stylus">
+.video-position-select {
+  .v-field__input {
+    min-height: unset;
+    min-width: unset;
+    padding 0 !important
+    margin 0 !important
+    position: relative;
+  }
+
+  div.v-field__append-inner {
+      padding 0 !important
+  }
+}
 </style>
