@@ -52,6 +52,7 @@ export default {
     invalid_email: "Invalid email",
     participants: "participants",
     message_edit_placeholder: "Press Ctrl + Enter to send, Esc to clear. You also can drag and drop an image's file on this label. Also you can paste an image from the editor.",
+    message_edit_placeholder_short: "Write a message...",
     message_editing: "Editing message",
     message_creating: "New message",
     message_broadcast: "Broadcast",
