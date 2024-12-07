@@ -914,7 +914,7 @@ export default {
         }, 300)
       }
     },
-    'chatStore.localMicrophone': {
+    'chatStore.localMicrophoneEnabled': {
       handler: function (newValue, oldValue) {
         const onlyOneLocalComponentWithAudio = this.onlyOneLocalTrackWith(this.room.localParticipant.identity)
         if (onlyOneLocalComponentWithAudio) {
@@ -925,7 +925,7 @@ export default {
         }
       },
     },
-    'chatStore.localVideo': {
+    'chatStore.localVideoEnabled': {
       handler: function (newValue, oldValue) {
         const onlyOneLocalComponentWithVideo = this.onlyOneLocalTrackWith(this.room.localParticipant.identity, true)
         if (onlyOneLocalComponentWithVideo) {

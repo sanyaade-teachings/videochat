@@ -44,8 +44,8 @@
             <template v-if="!isMobile()">
               <template v-if="chatStore.isInCall()">
                 <template v-if="chatStore.canShowMicrophoneButton">
-                  <v-btn v-if="chatStore.localMicrophone" icon @click="offMicrophone()" :title="$vuetify.locale.t('$vuetify.mute_audio')"><v-icon>mdi-microphone</v-icon></v-btn>
-                  <v-btn v-if="!chatStore.localMicrophone" icon @click="onMicrophone()" :title="$vuetify.locale.t('$vuetify.unmute_audio')"><v-icon>mdi-microphone-off</v-icon></v-btn>
+                  <v-btn v-if="chatStore.localMicrophoneEnabled" icon @click="offMicrophone()" :title="$vuetify.locale.t('$vuetify.mute_audio')"><v-icon>mdi-microphone</v-icon></v-btn>
+                  <v-btn v-if="!chatStore.localMicrophoneEnabled" icon @click="onMicrophone()" :title="$vuetify.locale.t('$vuetify.unmute_audio')"><v-icon>mdi-microphone-off</v-icon></v-btn>
                 </template>
 
                 <v-btn icon @click="addScreenSource()" :title="$vuetify.locale.t('$vuetify.screen_share')">
@@ -660,10 +660,10 @@ export default {
           });
         },
         onMicrophone() {
-          this.chatStore.localMicrophone = true
+          this.chatStore.localMicrophoneEnabled = true
         },
         offMicrophone() {
-          this.chatStore.localMicrophone = false
+          this.chatStore.localMicrophoneEnabled = false
         },
         addVideoSource() {
           bus.emit(ADD_VIDEO_SOURCE_DIALOG);

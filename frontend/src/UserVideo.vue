@@ -120,7 +120,7 @@ export default {
             this.audioMute = newState;
 
             if (this.isLocal && !skipStoreUpdate) { // skipStoreUpdate prevents infinity recursion
-                this.chatStore.localMicrophone = !newState
+                this.chatStore.localMicrophoneEnabled = !newState
             }
         },
         setAvatar(a) {
@@ -133,7 +133,7 @@ export default {
             this.videoMute = newState;
 
             if (this.isLocal && !skipStoreUpdate) { // skipStoreUpdate prevents infinity recursion
-              this.chatStore.localVideo = !newState
+              this.chatStore.localVideoEnabled = !newState
             }
         },
         getUserId() {

@@ -57,9 +57,9 @@ export const useChatStore = defineStore('chat', {
         initializingStaringVideoRecord: false,
         initializingStoppingVideoRecord: false,
         canShowMicrophoneButton: false,
-        localMicrophone: false, // current state - enabled or not
+        localMicrophoneEnabled: false, // current state - enabled or not
         canShowVideoButton: false,
-        localVideo: false, // current state - enabled or not
+        localVideoEnabled: false, // current state - enabled or not
         leavingVideoAcceptableParam: false,
         initializingVideoCall: false,
         isEditingBigText: false,
