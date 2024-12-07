@@ -36,6 +36,7 @@ import videoPositionMixin from "@/mixins/videoPositionMixin.js";
 import {stopCall} from "@/utils.js";
 import bus, {ADD_SCREEN_SOURCE} from "@/bus/bus.js";
 import {
+  setStoredPresenter,
   setStoredVideoPosition,
   VIDEO_POSITION_AUTO, VIDEO_POSITION_GALLERY,
   VIDEO_POSITION_HORIZONTAL,
@@ -96,7 +97,9 @@ export default {
       return this.chatStore.presenterEnabled
     },
     presenterClick() {
-      this.chatStore.presenterEnabled = !this.chatStore.presenterEnabled
+      const v = !this.chatStore.presenterEnabled;
+      this.chatStore.presenterEnabled = v;
+      setStoredPresenter(v);
     },
   }
 }
