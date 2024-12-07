@@ -110,7 +110,7 @@ const panelSizesKey = "panelSizes";
 
 const emptyStoredPanes = () => {
   return {
-    topPane: 40, // ChatVideo mobile
+    topPane: 60, // ChatVideo mobile
     leftPane: 20, // ChatList
     rightPane: 40, // ChatVideo desktop
     bottomPane: 20, // MessageEdit in case desktop (!isMobile())

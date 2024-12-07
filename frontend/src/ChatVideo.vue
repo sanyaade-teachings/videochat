@@ -239,7 +239,6 @@ export default {
     },
     // TODO если пользак кликнул по элементу UserVideo, то его выбирать (override в Presenter) (pinning) - среди кнопок UserVideo вместо fullscreen, а фуллскрин убрать
     // TODO think how to reuse the presenter mode with egress
-    // TODO выбрать side + presenter по дефолту на десктопе, НО НЕ на мобилке
     detachPresenter() {
       if (this.presenterData) {
         this.presenterData.videoStream?.videoTrack?.detach(this.$refs.presenterRef);
