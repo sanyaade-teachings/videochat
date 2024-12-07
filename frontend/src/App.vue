@@ -175,7 +175,7 @@ import {
   hasLength,
   isCalling,
   isChatRoute,
-  setLanguageToVuetify, stopCall
+  setLanguageToVuetify, stopCall, unescapeHtml
 } from "@/utils";
 import {
     chat_list_name,
@@ -635,7 +635,7 @@ export default {
               this.invitedVideoChatAlert = true;
               this.$nextTick(()=>{
                 this.invitedVideoChatId = data.chatId;
-                this.invitedVideoChatName = data.chatName;
+                this.invitedVideoChatName = unescapeHtml(data.chatName);
                 this.invitedVideoChatState = true;
               }).then(()=>{
                   createBrowserNotificationIfPermitted(this.$router, data.chatId, data.chatName, data.avatar, null, this.$vuetify.locale.t('$vuetify.you_called_short', this.invitedVideoChatId), NOTIFICATION_TYPE_CALL);
