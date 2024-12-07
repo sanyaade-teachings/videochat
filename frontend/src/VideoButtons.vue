@@ -56,7 +56,8 @@ export default {
         return ["video-buttons-control", "video-buttons-control-horizontal"]
       } else if (this.videoIsVertical())  {
         if (!this.chatStore.presenterEnabled) {
-          return ["video-buttons-control", "video-buttons-control-vertical"]
+          const vbcv = this.isMobile() ? "video-buttons-control-vertical-mobile" : "video-buttons-control-vertical";
+          return ["video-buttons-control", vbcv]
         } else {
           return ["video-buttons-control", "video-buttons-control-horizontal"]
         }
@@ -95,7 +96,6 @@ export default {
 
 
 <style scoped lang="stylus">
-@import "constants.styl"
 
 .video-buttons-control {
   background rgba(255, 255, 255, 0.65)
@@ -119,11 +119,12 @@ export default {
   z-index 20
 }
 
-@media screen and (max-width: $mobileWidth) {
-  .video-buttons-control-vertical {
-    margin-left: unset;
-    left: 10px;
-  }
+.video-buttons-control-vertical-mobile {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  z-index 20
+  left: 10px;
 }
 
 .video-position-select {
