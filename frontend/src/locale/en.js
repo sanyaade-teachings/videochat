@@ -324,5 +324,6 @@ export default {
     database: "Database",
     set_password: "Set password",
     video_presenter_enable: "Enable presenter",
-    close_video: "Close video"
+    close_video: "Close video",
+    video_presenter_disable: "Disable presenter"
 }
