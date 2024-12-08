@@ -237,7 +237,7 @@ export default {
             return 0
       }
     },
-    // TODO если пользак кликнул по элементу UserVideo, то его выбирать (override в Presenter) (pinning) - среди кнопок UserVideo вместо fullscreen, а фуллскрин убрать
+    // TODO pin to presenter an element from UserVideo
     // TODO think how to reuse the presenter mode with egress
     detachPresenter() {
       if (this.presenterData) {
