@@ -191,6 +191,10 @@ export const setStoredVideoPosition = (v) => {
     localStorage.setItem(KEY_VIDEO_POSITION, JSON.stringify(v));
 }
 
+export const positionItems = () => {
+    return [VIDEO_POSITION_HORIZONTAL, VIDEO_POSITION_VERTICAL, VIDEO_POSITION_GALLERY]
+}
+
 
 export const KEY_PRESENTER = 'presenter';
 

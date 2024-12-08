@@ -36,11 +36,9 @@ import videoPositionMixin from "@/mixins/videoPositionMixin.js";
 import {stopCall} from "@/utils.js";
 import bus, {ADD_SCREEN_SOURCE} from "@/bus/bus.js";
 import {
+  positionItems,
   setStoredPresenter,
   setStoredVideoPosition,
-  VIDEO_POSITION_GALLERY,
-  VIDEO_POSITION_HORIZONTAL,
-  VIDEO_POSITION_VERTICAL
 } from "@/store/localStore.js";
 
 export default {
@@ -69,7 +67,7 @@ export default {
       }
     },
     positionItems() {
-      return [VIDEO_POSITION_HORIZONTAL, VIDEO_POSITION_VERTICAL, VIDEO_POSITION_GALLERY]
+      return positionItems()
     },
   },
   methods: {

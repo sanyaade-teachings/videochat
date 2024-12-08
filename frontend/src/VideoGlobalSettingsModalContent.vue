@@ -158,8 +158,6 @@
       setStoredScreenSimulcast,
       setStoredRoomDynacast,
       setStoredRoomAdaptiveStream,
-      VIDEO_POSITION_HORIZONTAL,
-      VIDEO_POSITION_VERTICAL,
       setStoredVideoPosition,
       setStoredCodec,
       NULL_CODEC,
@@ -167,7 +165,7 @@
       setStoredCallVideoDeviceId,
       setStoredCallAudioDeviceId,
       setStoredPresenter,
-      VIDEO_POSITION_GALLERY
+      positionItems
     } from "./store/localStore";
     import {videochat_name} from "./router/routes";
     import videoServerSettingsMixin from "@/mixins/videoServerSettingsMixin";
@@ -290,7 +288,7 @@
                 return [NULL_CODEC, 'vp8', 'h264', 'vp9', 'av1']
             },
             positionItems() {
-                return [VIDEO_POSITION_HORIZONTAL, VIDEO_POSITION_VERTICAL, VIDEO_POSITION_GALLERY]
+                return positionItems()
             },
             chatId() {
                 return this.$route.params.id
