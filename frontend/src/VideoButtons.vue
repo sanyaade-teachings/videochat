@@ -14,7 +14,7 @@
     </template>
     <v-btn variant="plain" tile icon @click.stop.prevent="onEnterFullscreen" :title="$vuetify.locale.t('$vuetify.fullscreen')"><v-icon size="x-large">mdi-arrow-expand-all</v-icon></v-btn>
 
-    <v-btn :disabled="videoIsGallery()" tile icon :input-value="presenterValue()" @click="presenterClick" :variant="presenterValue() ? 'tonal' : 'plain'" :title="presenterValue() ? $vuetify.locale.t('$vuetify.video_presenter_disable') : $vuetify.locale.t('$vuetify.video_presenter_enable')"><v-icon size="x-large">mdi-image-area</v-icon></v-btn>
+    <v-btn :disabled="videoIsGallery()" tile icon :input-value="presenterValue()" @click="presenterClick" :variant="presenterValue() ? 'tonal' : 'plain'" :title="presenterValue() ? $vuetify.locale.t('$vuetify.video_presenter_disable') : $vuetify.locale.t('$vuetify.video_presenter_enable')"><v-icon size="x-large">mdi-presentation</v-icon></v-btn>
 
     <v-select
         class="video-position-select"
