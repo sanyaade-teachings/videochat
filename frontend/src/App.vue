@@ -175,7 +175,7 @@ import {
   hasLength,
   isCalling,
   isChatRoute,
-  setLanguageToVuetify, stopCall, unescapeHtml
+  setLanguageToVuetify, stopCall, unescapeHtml, goToPreservingQuery
 } from "@/utils";
 import {
     chat_list_name,
@@ -217,7 +217,6 @@ import {
   SEARCH_MODE_CHATS,
   SEARCH_MODE_MESSAGES,
   SEARCH_MODE_USERS,
-  goToPreservingQuery
 } from "@/mixins/searchString";
 import RightPanelActions from "@/RightPanelActions.vue";
 import SettingsModal from "@/SettingsModal.vue";

@@ -32,7 +32,7 @@ import axios from "axios";
 import { retry } from '@lifeomic/attempt';
 import {
   defaultAudioMute,
-  getWebsocketUrlPrefix, hasLength, isFullscreen, isMobileBrowser, loadingMessage, PURPOSE_CALL
+  getWebsocketUrlPrefix, hasLength, isFullscreen, isMobileBrowser, loadingMessage, PURPOSE_CALL, goToPreservingQuery
 } from "@/utils";
 import {
   getStoredAudioDevicePresents, getStoredCallAudioDeviceId, getStoredCallVideoDeviceId,
@@ -52,7 +52,6 @@ import {chat_name, videochat_name} from "@/router/routes";
 import videoServerSettingsMixin from "@/mixins/videoServerSettingsMixin";
 import {useChatStore} from "@/store/chatStore";
 import {mapStores} from "pinia";
-import {goToPreservingQuery} from "@/mixins/searchString";
 import pinia from "@/store/index";
 import videoPositionMixin from "@/mixins/videoPositionMixin";
 import { Splitpanes, Pane } from 'splitpanes';

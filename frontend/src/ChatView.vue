@@ -62,7 +62,8 @@ import {
     isCalling,
     isChatRoute,
     new_message,
-    setTitle
+    setTitle,
+    goToPreservingQuery
 } from "@/utils";
 import bus, {
     CHAT_DELETED,
@@ -97,7 +98,7 @@ import {chat_list_name, chat_name, messageIdHashPrefix, videochat_name} from "@/
 import graphqlSubscriptionMixin from "@/mixins/graphqlSubscriptionMixin";
 import ChatVideo from "@/ChatVideo.vue";
 import videoPositionMixin from "@/mixins/videoPositionMixin";
-import {goToPreservingQuery, SEARCH_MODE_CHATS, searchString} from "@/mixins/searchString.js";
+import {SEARCH_MODE_CHATS, searchString} from "@/mixins/searchString.js";
 import onFocusMixin from "@/mixins/onFocusMixin.js";
 
 const getChatEventsData = (message) => {
