@@ -38,7 +38,7 @@ import bus, {ADD_SCREEN_SOURCE} from "@/bus/bus.js";
 import {
   setStoredPresenter,
   setStoredVideoPosition,
-  VIDEO_POSITION_AUTO, VIDEO_POSITION_GALLERY,
+  VIDEO_POSITION_GALLERY,
   VIDEO_POSITION_HORIZONTAL,
   VIDEO_POSITION_VERTICAL
 } from "@/store/localStore.js";
@@ -69,7 +69,7 @@ export default {
       }
     },
     positionItems() {
-      return [VIDEO_POSITION_AUTO, VIDEO_POSITION_HORIZONTAL, VIDEO_POSITION_VERTICAL, VIDEO_POSITION_GALLERY]
+      return [VIDEO_POSITION_HORIZONTAL, VIDEO_POSITION_VERTICAL, VIDEO_POSITION_GALLERY]
     },
   },
   methods: {

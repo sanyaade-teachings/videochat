@@ -1,7 +1,7 @@
 import {
     getStoredPresenter,
     getStoredVideoPosition,
-    VIDEO_POSITION_AUTO, VIDEO_POSITION_GALLERY,
+    VIDEO_POSITION_GALLERY,
     VIDEO_POSITION_HORIZONTAL,
     VIDEO_POSITION_VERTICAL
 } from "@/store/localStore";
@@ -11,11 +11,7 @@ export default () => {
     return {
         methods: {
             videoIsHorizontalPlain(value) {
-                if (value === VIDEO_POSITION_AUTO) {
-                    return true // both mobile and desktop
-                } else {
-                    return value === VIDEO_POSITION_HORIZONTAL;
-                }
+                return value === VIDEO_POSITION_HORIZONTAL;
             },
             videoIsHorizontal() {
               const stored = this.chatStore.videoPosition;
