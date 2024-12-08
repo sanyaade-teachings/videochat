@@ -82,9 +82,7 @@
             // we cannot move it from front to back because there are messages-over-websocket
             // and itsn't clear did user read them or not
             sendRead(dto) {
-              if (!this.isCompact) {
-                axios.put(`/api/chat/${this.chatId}/message/read/${dto.id}`)
-              }
+              axios.put(`/api/chat/${this.chatId}/message/read/${dto.id}`)
             },
             deleteMessage(dto){
                 this.$emit('deleteMessage', dto)
