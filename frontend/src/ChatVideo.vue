@@ -247,6 +247,7 @@ export default {
     },
     updatePresenter(data) {
       if (data?.videoStream) {
+        this.detachPresenter();
         data.videoStream.videoTrack?.attach(this.$refs.presenterRef);
         this.presenterData = data;
         this.updatePresenterVideoMute();
@@ -333,7 +334,7 @@ export default {
         }
       }
     },
-    electNewPresenterCarefully() {
+    electNewPresenter() {
       const data = this.getAnyPrioritizedVideoData();
       if (data) {
         this.updatePresenter(data);
@@ -872,15 +873,16 @@ export default {
           for (const containerEl of this.videoContainerDiv.children) {
             this.setUserVideoWrapperClass(containerEl, videoIsHorizontal, videoIsGallery);
           }
-          if (this.canUsePresenterPlain(newValue)) {
-            this.$nextTick(() => {
-              // test case
-              // disable presenter
-              // switch vertical and horizontal
-              // the local video shouldn't disappear
 
-              // thus because of this this.updatePresenter(data) doesn't have this.detachPresenter()
-              this.electNewPresenterCarefully();
+          // we added it for the case when user switches from gallery to vertical or horizontal where presenter can be shown
+          // test case
+          // disable presenter
+          // switch vertical and horizontal
+          // the local video shouldn't disappear
+          // thus because of this this.updatePresenter(data) doesn't have this.detachPresenter()
+          if (this.canUsePresenterPlain(newValue) && this.chatStore.presenterEnabled) {
+            this.$nextTick(() => {
+              this.electNewPresenter();
             })
           }
           if (videoIsGallery) {
@@ -896,7 +898,7 @@ export default {
         if (this.videoContainerDiv) {
           if (newValue) {
             this.$nextTick(()=>{ // needed because videoContainerDiv still not visible for attaching from livekit js
-              this.electNewPresenterCarefully();
+              this.electNewPresenter();
             })
           } else {
             this.detachPresenter();
